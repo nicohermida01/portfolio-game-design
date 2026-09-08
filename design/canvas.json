@@ -1,0 +1,18 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 4460, "title": "Desktop — 1440" },
+    { "file": "Mobile.dc.html", "x": 1560, "y": 0, "w": 390, "h": 5240, "title": "Mobile — 390" },
+    { "file": "DirectionEditorial.dc.html", "x": 0, "y": 5440, "w": 880, "h": 620 },
+    { "file": "DirectionSoftTech.dc.html", "x": 1000, "y": 5440, "w": 880, "h": 620 }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 0,
+      "y": -178,
+      "w": 640,
+      "text": "DELIVERABLE — \"Index\" direction, built out for desktop + mobile.\nAesthetic: engineering datasheet. Near-black canvas, Sora display + JetBrains Mono labels, hairline rules as the only decoration, numbered sections, one cyan \"live\" signal.\n\nContent is real, from the Nico Dev vault: 3 projects (Necto, Estudio Nodo, Bit by Bit) and 3 jobs (Autoinspector, CEPA Argentina, Academia Perrupato). Each entry has an image slot — filled where a screenshot exists, hatched where it's still empty (Necto, Autoinspector, Academia Perrupato need one).\n\nBelow: two alternate directions as low-fi sketches — Editorial (serif poster) and Soft tech (calm cards)."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

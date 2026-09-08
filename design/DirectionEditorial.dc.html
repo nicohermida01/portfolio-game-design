@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #F4F4F0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+    .lbl { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #8A8A80; }
+    .box { border: 1.5px dashed #B7B7AC; background: #ECECE4; }
+  </style>
+</helmet>
+
+<div style="width: 880px; height: 620px; background: #F4F4F0; color: #1C1C18; padding: 30px; position: relative; overflow: hidden;">
+
+  <div class="lbl" style="position: absolute; top: 30px; left: 30px;">Direction A · Editorial / Kinetic poster</div>
+  <div class="lbl" style="position: absolute; top: 30px; right: 30px; color: #2C6BFF;">low-fi sketch</div>
+
+  <!-- oversized headline breaking the grid -->
+  <div style="position: absolute; top: 78px; left: 20px; right: 30px;">
+    <div style="font-family: Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 74px; line-height: 0.92; letter-spacing: -0.03em; color: #1C1C18;">
+      NICO<br>HERMIDA<span style="color: #2C6BFF;">.</span>
+    </div>
+  </div>
+
+  <!-- blue flood block behind a corner -->
+  <div style="position: absolute; top: 92px; right: 30px; width: 150px; height: 150px; background: #2C6BFF; opacity: 0.9;"></div>
+  <div style="position: absolute; top: 250px; right: 46px; width: 200px;" class="lbl">Fullstack developer — builds<br>from the API to the interface</div>
+
+  <!-- project index as a contents table -->
+  <div style="position: absolute; left: 20px; right: 30px; top: 300px;">
+    <div style="border-top: 2px solid #1C1C18; padding-top: 10px;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #C9C9BE;">
+      <span style="font-family: Georgia, serif; font-size: 26px;">01 &nbsp; Necto</span>
+      <span class="lbl">Next / Prisma / Postgres</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #C9C9BE;">
+      <span style="font-family: Georgia, serif; font-size: 26px;">02 &nbsp; Estudio Nodo</span>
+      <span class="lbl">Vite / Vanilla JS</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #C9C9BE;">
+      <span style="font-family: Georgia, serif; font-size: 26px;">03 &nbsp; Bit by Bit</span>
+      <span class="lbl">Astro / TS</span>
+    </div>
+  </div>
+
+  <div class="lbl" style="position: absolute; bottom: 26px; left: 30px; right: 30px; line-height: 1.6;">
+    Serif display + mono captions · warm paper ground · one blue flood block · asymmetric, grid-breaking · reads like a magazine contents page. Charisma from scale contrast, not decoration.
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":880,"height":620}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

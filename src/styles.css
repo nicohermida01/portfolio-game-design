@@ -1,0 +1,310 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: #dfeae0;
+}
+
+/* ======================================================================
+   Mode switch — circular floating button, bottom-right, high contrast
+   Shows the icon of the mode you'd switch TO (joystick = 3D, page = page).
+   ====================================================================== */
+.mode-switch {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #0b1f19;
+  background: #3effc0;
+  color: #07110d;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.35),
+    0 0 0 6px rgba(62, 255, 192, 0.22);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.mode-switch:hover {
+  background: #5cffce;
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.4),
+    0 0 0 8px rgba(62, 255, 192, 0.3);
+}
+
+.mode-switch:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.mode-switch:focus-visible {
+  outline: 3px solid #2c6bff;
+  outline-offset: 3px;
+}
+
+.mode-switch svg {
+  display: block;
+}
+
+@media (pointer: coarse) {
+  /* Keep clear of the joystick pad on the opposite corner. */
+  .mode-switch {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+.scene-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(30, 40, 32, 0.6);
+  font-size: 14px;
+}
+
+/* Page-mode ("Index" datasheet) styles live in src/ui/page.css. */
+
+/* ======================================================================
+   3D mode — HUD, section panel, joystick
+   ====================================================================== */
+#root canvas {
+  touch-action: none; /* one-finger drags must not scroll/zoom the page */
+}
+
+.hud {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  color: rgba(30, 40, 32, 0.7);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hud-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .hud-keys {
+    display: none;
+  }
+  .hud-touch {
+    display: inline;
+  }
+}
+
+.hud kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(30, 40, 32, 0.1);
+  border: 1px solid rgba(30, 40, 32, 0.2);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.panel {
+  position: absolute;
+  top: 50%;
+  right: 32px;
+  transform: translateY(-50%);
+  width: min(360px, calc(100vw - 64px));
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: rgba(20, 20, 35, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f2f2f7;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: panel-in 0.25s ease-out;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(16px);
+  }
+}
+
+.panel .tag {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a8aff;
+}
+
+.panel h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.panel p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(242, 242, 247, 0.8);
+}
+
+/* Keep a content-heavy panel on screen. */
+.panel {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+
+.panel-sub {
+  margin: -2px 0 10px;
+  font-size: 12px;
+  color: rgba(242, 242, 247, 0.55);
+}
+
+.panel-meta {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(138, 138, 255, 0.16);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #b9b9ff;
+}
+
+.panel-stack {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.panel-stack li {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: rgba(242, 242, 247, 0.75);
+}
+
+.panel-links {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  gap: 16px;
+}
+
+.panel-links a,
+.panel-link {
+  color: #8a8aff;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.panel-link {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.panel-links a:hover,
+.panel-link:hover {
+  text-decoration: underline;
+}
+
+/* ======================================================================
+   3D mode — zone banner (region name, Cube World style)
+   ====================================================================== */
+.zone-banner {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 24px;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-8px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.zone-banner.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.zone-banner-kicker {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(30, 40, 32, 0.55);
+}
+
+.zone-banner-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(20, 28, 22, 0.92);
+  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.6);
+}
+
+.joystick {
+  display: none;
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: rgba(30, 40, 32, 0.12);
+  border: 1px solid rgba(30, 40, 32, 0.18);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+@media (pointer: coarse) {
+  .joystick {
+    display: block;
+  }
+}
