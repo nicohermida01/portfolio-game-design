@@ -6,12 +6,13 @@ import { useGameStore } from "../store.js";
 import Signpost from "./Signpost.jsx";
 
 export default function PointOfInterest({ marker }) {
+  const discRef = useRef();
   const ringRef = useRef();
   // Subscribe to just the boolean, so this only re-renders when its own
   // active state flips.
   const isActive = useGameStore((s) => s.activeMarker?.id === marker.id);
 
-  // Drop the ground ring onto the terrain surface (same height function the
+  // Drop the ground pad onto the terrain surface (same height function the
   // player, props and signs use).
   const [x, , z] = marker.position;
   const position = useMemo(() => [x, groundHeight(x, z), z], [x, z]);
@@ -20,31 +21,50 @@ export default function PointOfInterest({ marker }) {
   // ("Index", "Contact"); zone markers fall back to the content title.
   const signLabel = marker.label ?? resolveMarker(marker.id).title;
 
+  // A calm breathing pad — filled disc + thin rim, no spin. It just pulses
+  // gently, and firms up (brighter rim, faint scale swell) once you're close
+  // enough to activate it.
   useFrame((state) => {
+    const pulse = (Math.sin(state.clock.elapsedTime * 1.8) + 1) * 0.5; // 0..1
+    if (discRef.current) {
+      discRef.current.material.opacity =
+        (isActive ? 0.24 : 0.08) + pulse * (isActive ? 0.07 : 0.04);
+    }
     if (ringRef.current) {
-      ringRef.current.rotation.z = state.clock.elapsedTime * 0.35;
+      ringRef.current.material.opacity = isActive
+        ? 0.5 + pulse * 0.12
+        : 0.16 + pulse * 0.05;
+      ringRef.current.scale.setScalar(isActive ? 1 + pulse * 0.03 : 1);
     }
   });
 
-  // Zone markers ring in their zone's tint; standalone points use a soft
-  // lavender. Active just warms it slightly — no loud yellow competing with
-  // the campfire.
-  const ringColor = isActive ? "#ffdf9e" : (marker.color ?? "#7f86c8");
+  // Zone markers use their zone's tint; standalone points a soft lavender.
+  // Active just warms it — no loud yellow competing with the campfire.
+  const padColor = isActive ? "#ffdf9e" : (marker.color ?? "#7f86c8");
 
   return (
     <>
       {/* The marker itself is a wooden sign. */}
       <Signpost position={marker.position} label={signLabel} highlight={isActive} />
 
-      {/* Spinning ground ring — the "walk up here" affordance. */}
+      {/* Ground pad — the "walk up here" affordance. */}
       <group position={position}>
-        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.05, 0]}>
-          <ringGeometry args={[1.02, 1.14, 48]} />
+        <mesh ref={discRef} rotation-x={-Math.PI / 2} position={[0, 0.04, 0]}>
+          <circleGeometry args={[1.16, 48]} />
           <meshBasicMaterial
-            color={ringColor}
+            color={padColor}
             transparent
             depthWrite={false}
-            opacity={isActive ? 0.55 : 0.24}
+            opacity={0}
+          />
+        </mesh>
+        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.05, 0]}>
+          <ringGeometry args={[1.08, 1.18, 48]} />
+          <meshBasicMaterial
+            color={padColor}
+            transparent
+            depthWrite={false}
+            opacity={0}
           />
         </mesh>
       </group>
