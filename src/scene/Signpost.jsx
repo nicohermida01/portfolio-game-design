@@ -37,11 +37,31 @@ export default function Signpost({ position, highlight = false }) {
         <meshStandardMaterial
           color={highlight ? BOARD_HI : BOARD}
           emissive={highlight ? "#3a2a12" : "#000000"}
-          emissiveIntensity={highlight ? 0.6 : 0}
+          emissiveIntensity={highlight ? 1.4 : 0}
           flatShading
           roughness={1}
         />
       </mesh>
+
+      {/* lantern near the post top — a warm point so signs read at night */}
+      <mesh castShadow position={[0.13, 1.18, 0]}>
+        <boxGeometry args={[0.16, 0.22, 0.16]} />
+        <meshStandardMaterial
+          color="#ffcf87"
+          emissive="#ffb347"
+          emissiveIntensity={2}
+          flatShading
+          roughness={1}
+        />
+      </mesh>
+      <pointLight
+        color="#ffb060"
+        intensity={3}
+        distance={4.5}
+        decay={2}
+        castShadow={false}
+        position={[0.13, 1.18, 0.06]}
+      />
     </group>
   );
 }

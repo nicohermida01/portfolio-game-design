@@ -65,6 +65,28 @@ export default function Cabin({ position, scale = 1 }) {
           <boxGeometry args={[0.55, 0.9, 0.08]} />
           <meshStandardMaterial color={DOOR} flatShading roughness={1} />
         </mesh>
+
+        {/* warm window on the front wall, beside the door — glows at night */}
+        <mesh position={[0.72, 0.95, 0.92]}>
+          <boxGeometry args={[0.42, 0.42, 0.06]} />
+          <meshStandardMaterial
+            color="#ffcf87"
+            emissive="#ffb347"
+            emissiveIntensity={2}
+            flatShading
+            roughness={1}
+          />
+        </mesh>
+
+        {/* warm light spilling out just past the window */}
+        <pointLight
+          color="#ffb060"
+          intensity={6}
+          distance={7}
+          decay={2}
+          castShadow={false}
+          position={[0.72, 1.1, 1.5]}
+        />
       </group>
     </RigidBody>
   );
