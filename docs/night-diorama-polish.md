@@ -234,9 +234,19 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
 - [ ] **No audio.** Campfire crackle, footsteps, water lap, night ambience.
   Files: (new).
 
-- [ ] **Minimal onboarding.** Only the WASD hint. No way to dismiss the panel
-  except walking away from the marker.
-  Files: `src/scene/ThreeScene.jsx`, `src/ui/Panel.jsx`.
+- [x] **Minimal onboarding.** Three pieces:
+  1. **Welcome line** — `src/ui/Intro.jsx`, a one-liner ("Walk up to a signpost
+     to read that section — bridges link the islands.") shown on first 3D entry,
+     cleared on first movement / any key / a click / after 8s, and never shown
+     again (`localStorage: pgd:intro-dismissed`).
+  2. **Close the panel** — `Panel.jsx` gets an `×` button and an `Esc` handler.
+     `store.js` tracks `dismissedMarkerId` so the panel stays closed while you're
+     still standing on that sign, and clears it once you leave the radius.
+  3. **Spawn guide arrow** — a small floating chevron over the player
+     (`Player.jsx`) that points at the nearest signpost until you reach your
+     first one, then it's gone for good (`localStorage: pgd:first-marker-seen`).
+  Files: `src/ui/Intro.jsx`, `src/ui/Panel.jsx`, `src/store.js`,
+  `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`, `src/styles.css`.
 
 - [~] **Character rendered as a dark blob.** `CHARACTER.present` is actually
   `true` — it's `public/models/Steve.glb`, a Quaternius rig with a Minecraft
