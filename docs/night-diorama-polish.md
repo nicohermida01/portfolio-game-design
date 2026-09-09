@@ -94,3 +94,139 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   `bottom` 24 → 28 and `max-width: calc(100vw - 48px)` so it wraps instead of
   clipping; on touch it moves to the top, clear of the joystick corner.
   Files: `src/styles.css` (`.hud`).
+
+---
+
+# Round 2 — post-screenshot review (2026-09-09)
+
+Findings from a fresh look at the running build against the code. Same status
+flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
+
+## High impact — breaks the read (visible in the screenshot)
+
+- [x] **Zone / point labels get occluded and clipped.** `PROJECTS` rendered as
+  `ROJECTS` (a tree in front of it); `INDEX` floated over open water, barely
+  legible. `ZoneLabel.jsx` `<Text>` used normal depth-testing, so any tree or
+  cabin between it and the camera cut into it, and near-distance opacity was
+  `0.12` (deferring to the DOM `ZoneBanner`) — but only ZONES raise that banner,
+  so `index` / `contact` (POINTS) were permanent ghosts.
+  → `material.depthTest/depthWrite = false` + `renderOrder` 10, mounted higher
+  (`+3.7` / `+3.4`), dim per-character-sized backing plate at `renderOrder` 9,
+  `outlineBlur` halo, and near-opacity `0.12` → `0.42` (min), clear `0.75` →
+  `0.95`. Verified in a headless render: `INDEX` sits on its plate, on top of
+  the cabin behind it, fully readable.
+  Files: `src/scene/ZoneLabel.jsx`, `src/scene/Experience.jsx`.
+
+- [x] **Signposts carry no information.** Every `Signpost` was the same amber
+  rectangle. Now the marker name is baked onto the board face with a drei
+  `<Text>` (0.13 font, wraps at `maxWidth` 0.96, warm off-white, dark outline),
+  wrapped with the board in a pitched sub-group so it tilts to face the camera.
+  `PointOfInterest` passes `marker.label ?? resolveMarker(id).title`, so POINTS
+  read "Index" / "Contact" and zone markers read the real content title.
+  Verified: "CEPA ARGENTINA", "AUTOINSPECTOR", "ACADEMIA PERRUPATO",
+  "ESTUDIO NODO", "INDEX" all legible from across the water.
+  Files: `src/scene/Signpost.jsx`, `src/scene/PointOfInterest.jsx`.
+
+- [x] **Lighting balance between islands is off.** Projects was blown out orange
+  (2 cabin lights intensity 6 / dist 7 + 3 sign lights intensity 3, clustered);
+  Work was nearly black. Cabin light 6 → 2.4, dist 7 → 5; sign light 3 → 1.3,
+  dist 4.5 → 3.4; window/lantern `emissiveIntensity` 2 → 1.6; ambient 0.42 →
+  0.52 and moon 1.1 → 1.25 to lift the unlit islands; `Bloom` intensity 0.8 →
+  0.5 so the warm glow stops washing. Verified: Work island now reads teal and
+  lit, Index cabin glow is warm but contained, campfire still the key light.
+  Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`, `src/scene/Experience.jsx`.
+
+- [~] **Too many real-time point lights.** ~8 signs + 6 cabins + campfire ≈ 15
+  dynamic lights in forward rendering — costs on mid/low GPUs and muddies the
+  scene. First pass only dialled each one down (see above). Still to do: move
+  sign/cabin lights to `emissive` + bloom and keep at most one real light per
+  island; campfire stays the only shadow-caster.
+  Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`.
+
+- [ ] **Activation ring reads as a broken spinning arc**, not a "stand here" pad.
+  Opacity `0.24` + constant rotation looks like a glitch. Make it a soft filled
+  disc that pulses on proximity, or only spin it while active.
+  Files: `src/scene/PointOfInterest.jsx`.
+
+## Medium impact — scene / world
+
+- [x] **Bridges read as railroad track.** Thin cross-planks with a regular gap
+  and an invisible handrail read as sleepers. Rebuilt `Bridge.jsx`: deck planks
+  near-flush (`PLANK_W` 0.26 / `PLANK_GAP` 0.05), continuous stringer beams
+  under both deck edges, a thick top handrail running the full span, and rail
+  posts at a regular `POST_SPACING` (1.5) pitch on both sides. Colliders updated
+  to the new deck half-width (0.85) and rail height (0.52). Verified in render:
+  now reads as a boardwalk / footbridge.
+  Files: `src/scene/Bridge.jsx`.
+  Still open: the `index→work` bridge still runs toward the frame edge — that's
+  framing (see the "Framing" item), not the bridge.
+
+- [ ] **Unidentified dark object clipping the Projects bridge** (at its foot in
+  the screenshot). `scatter()` in `Props.jsx` rejects props near markers, houses
+  and each sign's sightline, but **not** the bridge footprints — a tree/rock can
+  land on a bridge approach. Add bridge-foot clearance to the rejection loop.
+  Files: `src/scene/Props.jsx`, `src/sections.js` (`BRIDGES`).
+
+- [ ] **Framing.** Fixed iso camera + follow leaves Work half off-screen with its
+  label cut. Pull the camera back a touch (raise `CAMERA_OFFSET` or lower the
+  `fov` of 40) or move island centres inward toward the origin.
+  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`, `src/sections.js`.
+
+## Medium impact — code / consistency
+
+- [ ] **Mixed language + invisible loader.** `App.jsx` shows `"Cargando modo 3D…"`
+  in Spanish while the rest of the UI is English. `.scene-loading` is a dark
+  colour over the dark canvas (invisible), and `body { background: #dfeae0 }` is
+  light, so there's a white flash before the night scene paints. Unify language,
+  set the body background to the night blue.
+  Files: `src/App.jsx`, `src/styles.css` (`.scene-loading`, `body`).
+
+- [ ] **`groundHeight` called on every render** inside `Tree` / `Rock`
+  (`Props.jsx`), unlike `Cabin` / `Signpost` which `useMemo` it. Cheap but
+  inconsistent and avoidable.
+  Files: `src/scene/Props.jsx`.
+
+- [ ] **No instancing.** ~28 trees (×3 meshes each), 10 rocks, 6 cabins — each a
+  separate `RigidBody` + `mesh`. `InstancedMesh` for trees/rocks would cut a lot
+  of draw calls; colliders can stay separate or move to a fixed compound.
+  Files: `src/scene/Props.jsx`, `src/scene/Buildings.jsx`.
+
+- [ ] **Trimesh island colliders + capsule player.** Rapier trimesh/capsule
+  contact snags on the seams between radial segments — the player can catch on
+  ring edges. A heightfield collider or a convex/cone per island is smoother.
+  Files: `src/scene/Terrain.jsx`, `src/terrain/heightfield.js`.
+
+- [ ] **`Water` recomputes 1,225 vertices on the CPU every frame** (position +
+  colour + two `needsUpdate`). Fine on desktop; natural candidate for a vertex
+  shader (`onBeforeCompile` or a small `shaderMaterial`). Low priority.
+  Files: `src/scene/Water.jsx`.
+
+- [ ] **Fireflies drift over open sea.** `<Sparkles>` with `scale={[38,6,38]}`
+  centred on the origin scatters well past every island. Constrain the volume to
+  the playable zones or reduce the scale.
+  Files: `src/scene/Fireflies.jsx`.
+
+## Low impact — nice to have
+
+- [ ] **No audio.** Campfire crackle, footsteps, water lap, night ambience.
+  Files: (new).
+
+- [ ] **Minimal onboarding.** Only the WASD hint. No way to dismiss the panel
+  except walking away from the marker.
+  Files: `src/scene/ThreeScene.jsx`, `src/ui/Panel.jsx`.
+
+- [~] **Character rendered as a dark blob.** `CHARACTER.present` is actually
+  `true` — it's `public/models/Steve.glb`, a Quaternius rig with a Minecraft
+  "Steve" atlas. The FBX→glTF export set `metallicFactor: 0.4` with no PBR maps,
+  so under the dim night lighting the half-metal surface just reflected the near
+  black sky. Fix: `Character.jsx` now forces every material `metalness = 0`,
+  `roughness = 1`, `envMapIntensity = 0` on load, and `Player.jsx` carries a
+  soft cool follow light (`#aac2e4`, intensity 3.2, distance 5.5, no shadow) so
+  the character never sinks into black on a dark bridge or far island. Verified:
+  body colours now read.
+  Still open: the model itself is low-res Steve with a dark-hair head and reads
+  small on screen; the idle pose looks like a crouch. A nicer CC0 model
+  (Quaternius "Animated Characters") would lift it — can't download one from
+  this environment. Also `src/character.js` header comments still say
+  `present: false` / placeholder — stale, worth a cleanup pass.
+  Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`, `src/character.js`.
