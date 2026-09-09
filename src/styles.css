@@ -14,7 +14,9 @@ body,
 }
 
 body {
-  background: #dfeae0;
+  /* Only ever visible for the split second before React mounts; keep it dark
+     so neither mode (page #07090f, 3D #0e2136) flashes white on load. */
+  background: #0e2136;
 }
 
 /* ======================================================================
@@ -79,7 +81,8 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  color: rgba(30, 40, 32, 0.6);
+  background: #0e2136; /* cover the viewport while the 3D bundle downloads */
+  color: rgba(233, 238, 255, 0.65);
   font-size: 14px;
 }
 

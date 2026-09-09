@@ -16,7 +16,7 @@ export default function App() {
         <PagePortfolio />
       ) : (
         <Suspense
-          fallback={<div className="scene-loading">Cargando modo 3D…</div>}
+          fallback={<div className="scene-loading">Loading 3D mode…</div>}
         >
           <ThreeScene />
         </Suspense>
