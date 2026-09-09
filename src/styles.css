@@ -128,14 +128,13 @@ body {
 
 .panel {
   position: absolute;
-  top: 50%;
-  right: 32px;
-  transform: translateY(-50%);
-  width: min(360px, calc(100vw - 64px));
-  padding: 24px 28px;
-  border-radius: 16px;
-  background: rgba(20, 20, 35, 0.82);
-  backdrop-filter: blur(12px);
+  top: 24px;
+  right: 24px;
+  width: min(320px, calc(100vw - 48px));
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: rgba(16, 18, 30, 0.66);
+  backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f2f2f7;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
@@ -145,7 +144,7 @@ body {
 @keyframes panel-in {
   from {
     opacity: 0;
-    transform: translateY(-50%) translateX(16px);
+    transform: translateX(16px);
   }
 }
 

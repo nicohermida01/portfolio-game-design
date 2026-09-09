@@ -36,10 +36,12 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
 
 ## Medium impact
 
-- [ ] **Content panel covers the scene.** The right-side `Panel` card is large
-  and opaque — it hides a bridge and part of an island. Make it narrower or
-  reposition (e.g. bottom-left, or auto-flip away from the marker).
-  Files: `src/ui/Panel.jsx`, `src/ui/page.css` (or panel styles).
+- [x] **Content panel covers the scene.** It was vertically centred on the right
+  edge — right over the bridges/islands. Moved to the top-right corner (sky /
+  water in 3D; clear of the bottom-right mode button), narrowed 360 → 320px,
+  and made more translucent (bg `0.82` → `0.66`, blur 12 → 14). `max-height` +
+  scroll kept for text-heavy sections.
+  Files: `src/styles.css` (`.panel`).
 
 - [x] **Directional shadow frustum too small for the new layout.** Bounds ±22 →
   ±30 (covers the whole archipelago + margin); `shadow-mapSize` 2048 → 4096 to
