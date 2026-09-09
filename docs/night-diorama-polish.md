@@ -143,9 +143,11 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   island; campfire stays the only shadow-caster.
   Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`.
 
-- [ ] **Activation ring reads as a broken spinning arc**, not a "stand here" pad.
-  Opacity `0.24` + constant rotation looks like a glitch. Make it a soft filled
-  disc that pulses on proximity, or only spin it while active.
+- [x] **Activation ring reads as a broken spinning arc**, not a "stand here" pad.
+  Replaced the single spinning ring with a filled `circleGeometry` disc + a thin
+  static rim. No rotation; both breathe on a slow sine (`~3.5s`). On activate
+  the disc brightens (0.08 → 0.24 base), the rim firms up (0.16 → 0.5) and swells
+  ~3%. Opacity is driven in `useFrame` off refs, so no re-render churn.
   Files: `src/scene/PointOfInterest.jsx`.
 
 ## Medium impact — scene / world
@@ -161,11 +163,13 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   Still open: the `index→work` bridge still runs toward the frame edge — that's
   framing (see the "Framing" item), not the bridge.
 
-- [ ] **Unidentified dark object clipping the Projects bridge** (at its foot in
-  the screenshot). `scatter()` in `Props.jsx` rejects props near markers, houses
-  and each sign's sightline, but **not** the bridge footprints — a tree/rock can
-  land on a bridge approach. Add bridge-foot clearance to the rejection loop.
-  Files: `src/scene/Props.jsx`, `src/sections.js` (`BRIDGES`).
+- [x] **Unidentified dark object clipping the Projects bridge** (at its foot in
+  the screenshot). `scatter()` in `Props.jsx` rejected props near markers, houses
+  and sightlines but not the bridge footprints. Added `BRIDGE_FEET` to
+  `sections.js` (the shore landing points, matching Bridge.jsx's `radius * 0.9`
+  foot maths) and a `BRIDGE_FOOT_CLEARANCE` 2.6 rejection in `scatter()`.
+  Verified in render: approaches are clear.
+  Files: `src/scene/Props.jsx`, `src/sections.js` (`BRIDGE_FEET`).
 
 - [ ] **Framing.** Fixed iso camera + follow leaves Work half off-screen with its
   label cut. Pull the camera back a touch (raise `CAMERA_OFFSET` or lower the
@@ -174,16 +178,16 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
 
 ## Medium impact — code / consistency
 
-- [ ] **Mixed language + invisible loader.** `App.jsx` shows `"Cargando modo 3D…"`
-  in Spanish while the rest of the UI is English. `.scene-loading` is a dark
-  colour over the dark canvas (invisible), and `body { background: #dfeae0 }` is
-  light, so there's a white flash before the night scene paints. Unify language,
-  set the body background to the night blue.
+- [x] **Mixed language + invisible loader.** `"Cargando modo 3D…"` → `"Loading
+  3D mode…"`. `.scene-loading` now paints a full-bleed `#0e2136` with light
+  text (was dark-on-dark), and `body` background `#dfeae0` → `#0e2136` so the
+  pre-mount frame no longer flashes white (page mode's `.pp` already covers the
+  body with `#07090f`, so nothing else regresses). Verified: loader is a clean
+  dark screen.
   Files: `src/App.jsx`, `src/styles.css` (`.scene-loading`, `body`).
 
-- [ ] **`groundHeight` called on every render** inside `Tree` / `Rock`
-  (`Props.jsx`), unlike `Cabin` / `Signpost` which `useMemo` it. Cheap but
-  inconsistent and avoidable.
+- [x] **`groundHeight` called on every render** inside `Tree` / `Rock`
+  (`Props.jsx`). Both now `useMemo` it, matching `Cabin` / `Signpost`.
   Files: `src/scene/Props.jsx`.
 
 - [ ] **No instancing.** ~28 trees (×3 meshes each), 10 rocks, 6 cabins — each a
@@ -201,9 +205,9 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   shader (`onBeforeCompile` or a small `shaderMaterial`). Low priority.
   Files: `src/scene/Water.jsx`.
 
-- [ ] **Fireflies drift over open sea.** `<Sparkles>` with `scale={[38,6,38]}`
-  centred on the origin scatters well past every island. Constrain the volume to
-  the playable zones or reduce the scale.
+- [x] **Fireflies drift over open sea.** One global `<Sparkles>` box → one
+  per island, each centred on `ISLANDS[i].center`, `scale` ≈ `radius * 1.9` wide
+  by `3.2` tall, `count` ≈ `radius * 3.2`. They now hang over the grass.
   Files: `src/scene/Fireflies.jsx`.
 
 ## Low impact — nice to have
