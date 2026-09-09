@@ -25,7 +25,7 @@ const noise2D = createNoise2D(mulberry32(hashString("portfolio-diorama")));
 
 const ISLAND_TOP = 0.7;     // height at an island centre
 const SHORE_BOTTOM = -0.6;  // height at the island rim (a low bank, just above the waterline)
-const NOISE_AMP = 0.35;
+const NOISE_AMP = 0.5; // gentle interior relief — the geometry now follows it
 
 export function groundHeight(x, z) {
   let best = null, bestD = Infinity;
@@ -46,15 +46,64 @@ export function groundHeight(x, z) {
   return dome + relief;
 }
 
+// A subdivided polar disc: one centre vertex plus RADIAL_SEGS concentric rings
+// of ANGULAR_SEGS vertices, in the XZ plane. THREE.CircleGeometry is only a
+// coarse centre fan (no radial resolution), so a displaced CircleGeometry is a
+// smooth cone that ignores groundHeight's curve and noise — anything seated via
+// groundHeight then floats or sinks. This has enough radial detail for the
+// displaced surface (and its trimesh collider) to actually follow groundHeight.
+const RADIAL_SEGS = 16;
+const ANGULAR_SEGS = 48;
+
+function polarDisc(radius) {
+  const positions = [0, 0, 0]; // centre
+  for (let r = 1; r <= RADIAL_SEGS; r++) {
+    const rad = (r / RADIAL_SEGS) * radius;
+    for (let a = 0; a < ANGULAR_SEGS; a++) {
+      const ang = (a / ANGULAR_SEGS) * Math.PI * 2;
+      positions.push(Math.cos(ang) * rad, 0, Math.sin(ang) * rad);
+    }
+  }
+
+  const ringStart = (r) => 1 + (r - 1) * ANGULAR_SEGS;
+  const indices = [];
+  for (let a = 0; a < ANGULAR_SEGS; a++) {
+    const a2 = (a + 1) % ANGULAR_SEGS;
+    indices.push(0, ringStart(1) + a, ringStart(1) + a2);
+  }
+  for (let r = 1; r < RADIAL_SEGS; r++) {
+    for (let a = 0; a < ANGULAR_SEGS; a++) {
+      const a2 = (a + 1) % ANGULAR_SEGS;
+      const i0 = ringStart(r) + a;
+      const i1 = ringStart(r) + a2;
+      const j0 = ringStart(r + 1) + a;
+      const j1 = ringStart(r + 1) + a2;
+      indices.push(i0, j0, j1, i0, j1, i1);
+    }
+  }
+
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  g.setIndex(indices);
+  // Make sure the disc faces +Y (flip the winding if it came out inverted).
+  g.computeVertexNormals();
+  if (g.attributes.normal.getY(0) < 0) {
+    for (let i = 0; i < indices.length; i += 3) {
+      const t = indices[i];
+      indices[i] = indices[i + 2];
+      indices[i + 2] = t;
+    }
+    g.setIndex(indices);
+  }
+  return g;
+}
+
 // Builds one displaced, faceted disc per island. Geometry is pre-translated to
 // world coords so the mesh can stay at the origin. `zones` (from sections.js)
 // paint a soft-edged colour patch into the vertex-colour attribute — the
 // material renders it with `vertexColors`, so it's one mesh, no extra draw call.
-const ISLAND_SEGMENTS = 48;
-
 export function createIslandGeometry(island, zones = []) {
-  const geo = new THREE.CircleGeometry(island.radius * 1.12, ISLAND_SEGMENTS);
-  geo.rotateX(-Math.PI / 2);
+  const geo = polarDisc(island.radius * 1.12);
   geo.translate(island.center[0], 0, island.center[1]);
 
   const zoneColors = zones.map((z) => new THREE.Color(z.color));

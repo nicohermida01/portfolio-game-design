@@ -48,12 +48,15 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   is ~64MB VRAM — drop to 3072 if it bites on low-end.
   Files: `src/scene/Experience.jsx`.
 
-- [ ] **Re-check building seating after the heightfield change.** `SHORE_BOTTOM`
-  moved from -1.4 to -0.6; some cabins on island edges may now clip into or
-  float over the bank. Verify `groundHeight` seating for cabins/signposts near
-  the rim.
-  Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`,
-  `src/terrain/heightfield.js`.
+- [x] **Re-check building seating after the heightfield change.** Real cause
+  wasn't cabin positioning — the island mesh was a `THREE.CircleGeometry` centre
+  fan with no radial subdivision, so the visible/collider surface was a smooth
+  cone that ignored `groundHeight`'s curve and noise; anything seated via
+  `groundHeight` floated or sank against it. Replaced it with a hand-built
+  subdivided polar disc (16 rings × 48) that follows `groundHeight`, so mesh,
+  trimesh collider and seated objects agree. Then nudged `NOISE_AMP` 0.35 → 0.5
+  now that the geometry can carry the relief.
+  Files: `src/terrain/heightfield.js`.
 
 ## Low impact
 
