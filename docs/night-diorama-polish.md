@@ -68,8 +68,11 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   pop. 2 per island, staggered.
   Files: `src/scene/WaterRings.jsx`.
 
-- [ ] **Campfire embers form a thin vertical line** — looks like a string, not
-  sparks. Widen the spread, vary particle size, shorten lifetime.
+- [x] **Campfire embers form a thin vertical line.** Spawned in a ±0.15 column
+  with near-zero drift and a 2.5 s life. Now spawn across a 0.3-radius disc,
+  each ember has a fixed outward angle and fans out as it ages, life is shorter
+  and varied (~1.3–2.2 s), and each fades in fast / out over its back half via a
+  per-particle `vertexColors` buffer (no death pop). Count 30 → 40.
   Files: `src/scene/Campfire.jsx`.
 
 - [x] **Activation ring is a big bright yellow.** Active color `#ffd166` →

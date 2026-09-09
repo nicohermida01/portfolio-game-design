@@ -3,7 +3,8 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { groundHeight } from "../terrain/heightfield.js";
 
-const EMBER_COUNT = 30;
+const EMBER_COUNT = 40;
+const EMBER_COL = new THREE.Color("#ffb347");
 
 // Central campfire near spawn — the scene's key light. Everything is
 // procedural: crossed logs, two additive cones for the flame, a flickering
@@ -20,20 +21,28 @@ export default function Campfire() {
   // Resting brightness — per-frame sine flicker is applied as a % of this.
   const baseIntensity = 14;
 
-  // Ember state: a typed position array mutated in place, plus per-particle
-  // rise speed and lifetime so each one recycles independently.
+  // Ember state: a typed position + colour buffer mutated in place, plus
+  // per-particle rise speed, a fixed outward drift angle and a lifetime rate
+  // so each spark fans out of the bed and recycles independently.
   const embers = useMemo(() => {
     const positions = new Float32Array(EMBER_COUNT * 3);
+    const colors = new Float32Array(EMBER_COUNT * 3);
     const speed = new Float32Array(EMBER_COUNT);
+    const angle = new Float32Array(EMBER_COUNT);
+    const rate = new Float32Array(EMBER_COUNT);
     const life = new Float32Array(EMBER_COUNT);
     for (let i = 0; i < EMBER_COUNT; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 0.3;
-      positions[i * 3 + 1] = Math.random() * 1.5;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
-      speed[i] = 0.6 + Math.random() * 0.8;
+      const rr = Math.random() * 0.3;
+      const aa = Math.random() * Math.PI * 2;
+      positions[i * 3] = Math.cos(aa) * rr;
+      positions[i * 3 + 1] = 0.1 + Math.random() * 0.25;
+      positions[i * 3 + 2] = Math.sin(aa) * rr;
+      speed[i] = 0.5 + Math.random() * 0.6;
+      angle[i] = Math.random() * Math.PI * 2;
+      rate[i] = 0.45 + Math.random() * 0.4; // ~1.3–2.2 s lifetime
       life[i] = Math.random();
     }
-    return { positions, speed, life };
+    return { positions, colors, speed, angle, rate, life };
   }, []);
 
   useFrame((state, delta) => {
@@ -61,24 +70,45 @@ export default function Campfire() {
       lightRef.current.position.y = 1.1 + Math.sin(t * 17) * 0.03;
     }
 
-    // Embers: rise + drift, recycled to the fire base past end of life. The
-    // position buffer is mutated in place, never recreated.
+    // Embers: rise out of the bed, fan outward as they age, fade in fast then
+    // out over the back half (additive blend hides the low values). Buffers are
+    // mutated in place, never recreated.
     if (embersRef.current) {
       const arr = embersRef.current.geometry.attributes.position.array;
+      const col = embersRef.current.geometry.attributes.color.array;
       for (let i = 0; i < EMBER_COUNT; i++) {
-        embers.life[i] += delta * 0.4;
+        embers.life[i] += delta * embers.rate[i];
+
         if (embers.life[i] >= 1) {
+          const rr = Math.random() * 0.3;
+          const aa = Math.random() * Math.PI * 2;
           embers.life[i] = 0;
-          arr[i * 3] = (Math.random() - 0.5) * 0.3;
-          arr[i * 3 + 1] = 0.1;
-          arr[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+          embers.speed[i] = 0.5 + Math.random() * 0.6;
+          embers.angle[i] = Math.random() * Math.PI * 2;
+          embers.rate[i] = 0.45 + Math.random() * 0.4;
+          arr[i * 3] = Math.cos(aa) * rr;
+          arr[i * 3 + 1] = 0.1 + Math.random() * 0.25;
+          arr[i * 3 + 2] = Math.sin(aa) * rr;
         } else {
-          arr[i * 3] += Math.sin(t * 3 + i) * delta * 0.15;
+          const l = embers.life[i];
+          const fan = 0.2 + l * 0.55; // outward drift grows with age
+          arr[i * 3] +=
+            (Math.cos(embers.angle[i]) * fan + Math.sin(t * 4 + i * 1.7) * 0.12) *
+            delta;
           arr[i * 3 + 1] += embers.speed[i] * delta;
-          arr[i * 3 + 2] += Math.cos(t * 2.5 + i) * delta * 0.15;
+          arr[i * 3 + 2] +=
+            (Math.sin(embers.angle[i]) * fan + Math.cos(t * 3.3 + i * 1.1) * 0.12) *
+            delta;
         }
+
+        const l = embers.life[i];
+        const f = Math.min(l * 5, 1) * (1 - Math.max(0, (l - 0.5) / 0.5));
+        col[i * 3] = EMBER_COL.r * f;
+        col[i * 3 + 1] = EMBER_COL.g * f;
+        col[i * 3 + 2] = EMBER_COL.b * f;
       }
       embersRef.current.geometry.attributes.position.needsUpdate = true;
+      embersRef.current.geometry.attributes.color.needsUpdate = true;
     }
   });
 
@@ -130,17 +160,18 @@ export default function Campfire() {
         castShadow
       />
 
-      {/* Embers — one buffer geometry, positions recycled in useFrame. */}
+      {/* Embers — one buffer geometry, positions + colours recycled in useFrame. */}
       <points ref={embersRef} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
             args={[embers.positions, 3]}
           />
+          <bufferAttribute attach="attributes-color" args={[embers.colors, 3]} />
         </bufferGeometry>
         <pointsMaterial
-          color="#ffb347"
-          size={0.08}
+          vertexColors
+          size={0.075}
           sizeAttenuation
           transparent
           depthWrite={false}
