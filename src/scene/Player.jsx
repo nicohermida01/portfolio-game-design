@@ -31,6 +31,7 @@ const cameraTarget = new THREE.Vector3();
 export default function Player() {
   const bodyRef = useRef();
   const visualRef = useRef(); // the model; we yaw this, the collider stays put
+  const guideRef = useRef(); // spawn arrow, shown until the first marker
   const [, getKeys] = useKeyboardControls();
   const setActiveMarker = useGameStore((s) => s.setActiveMarker);
   const setActiveZone = useGameStore((s) => s.setActiveZone);
@@ -109,6 +110,44 @@ export default function Player() {
     }
     setActiveMarker(nearest);
 
+    // 5b. Spawn guide: a small arrow over the player pointing at the nearest
+    //     signpost, until they reach their first one — then it's gone for good.
+    const seenFirst = useGameStore.getState().firstMarkerSeen;
+    if (nearest && !seenFirst) useGameStore.getState().markFirstMarkerSeen();
+    const guide = guideRef.current;
+    if (guide) {
+      if (seenFirst) {
+        guide.visible = false;
+      } else {
+        let gx = 0;
+        let gz = 0;
+        let gd = Infinity;
+        for (const marker of MARKERS) {
+          const dx = marker.position[0] - pos.x;
+          const dz = marker.position[2] - pos.z;
+          const d = Math.hypot(dx, dz);
+          if (d < gd) {
+            gd = d;
+            gx = dx;
+            gz = dz;
+          }
+        }
+        guide.visible = true;
+        guide.rotation.y = Math.atan2(gx, gz);
+        guide.position.y = 2 + Math.sin(state.clock.elapsedTime * 3) * 0.09;
+        const head = guide.children[0];
+        if (head) {
+          // Stay clearly visible while it's guiding; it disappears for good the
+          // moment the first marker activates, so no need to fade on approach.
+          head.material.opacity = THREE.MathUtils.clamp(
+            (gd - ACTIVATION_RADIUS) / 4 + 0.5,
+            0.5,
+            0.85,
+          );
+        }
+      }
+    }
+
     // 6. Zone: whichever zone disc the player is standing in drives the banner.
     let zone = null;
     for (const z of ZONES) {
@@ -148,6 +187,20 @@ export default function Player() {
         castShadow={false}
         position={[1.4, 2.4, 1.4]}
       />
+
+      {/* Spawn guide arrow — Player.jsx orients + fades it; hidden for good
+          once you've reached your first signpost. */}
+      <group ref={guideRef} position={[0, 2, 0]}>
+        <mesh rotation-x={Math.PI / 2}>
+          <coneGeometry args={[0.16, 0.44, 4]} />
+          <meshBasicMaterial
+            color="#ffe4ad"
+            transparent
+            opacity={0}
+            depthWrite={false}
+          />
+        </mesh>
+      </group>
 
       <group ref={visualRef}>
         {CHARACTER.present ? (

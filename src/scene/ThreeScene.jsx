@@ -5,6 +5,7 @@ import Experience from "./Experience.jsx";
 import Panel from "../ui/Panel.jsx";
 import ZoneBanner from "../ui/ZoneBanner.jsx";
 import Joystick from "../ui/Joystick.jsx";
+import Intro from "../ui/Intro.jsx";
 
 // Everything 3D lives behind this one module so App can lazy-load it. In page
 // mode, none of three / rapier / drei / the character model is downloaded.
@@ -28,6 +29,7 @@ export default function ThreeScene() {
 
       <Panel />
       <ZoneBanner />
+      <Intro />
       <div className="hud">
         <span className="hud-keys">
           Move with <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>
