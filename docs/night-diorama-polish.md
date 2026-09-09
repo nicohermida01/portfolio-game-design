@@ -57,8 +57,12 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
 
 ## Low impact
 
-- [ ] **Water rings still read as a "radar ping".** Calmer now but still gamey.
-  Drop to 1 ring per island, or lower opacity / frequency further.
+- [x] **Water rings still read as a "radar ping".** Root cause was position: the
+  rings sat at grass height and started inside the island radius, so they read
+  as a marker on the ground. Now they start at `1.14 ×` radius (clear of the
+  island skirt), sit on the water surface (`WATER_LEVEL + 0.06`), expand a
+  gentle `0.3 ×`, and ease opacity in-then-out (`sin(p·π)`) so there's no spawn
+  pop. 2 per island, staggered.
   Files: `src/scene/WaterRings.jsx`.
 
 - [ ] **Campfire embers form a thin vertical line** — looks like a string, not
