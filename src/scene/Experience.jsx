@@ -28,10 +28,10 @@ export default function Experience() {
 
       {/* Night lighting: cool ambient fill + a moon directional bright enough
           to read the islands, while sky and water stay dark. */}
-      <ambientLight intensity={0.42} color="#3f5a7d" />
+      <ambientLight intensity={0.52} color="#3f5a7d" />
       <directionalLight
         position={[10, 14, 6]}
-        intensity={1.1}
+        intensity={1.25}
         color="#9fb4d4"
         castShadow
         shadow-mapSize={[4096, 4096]}
@@ -75,7 +75,7 @@ export default function Experience() {
           key={`label-${zone.id}`}
           position={[
             zone.center[0],
-            groundHeight(zone.center[0], zone.center[1]) + 2.8,
+            groundHeight(zone.center[0], zone.center[1]) + 3.7,
             zone.center[1],
           ]}
           label={zone.title}
@@ -86,7 +86,7 @@ export default function Experience() {
           key={`label-${point.id}`}
           position={[
             point.position[0],
-            groundHeight(point.position[0], point.position[2]) + 2.6,
+            groundHeight(point.position[0], point.position[2]) + 3.4,
             point.position[2],
           ]}
           label={point.label}
@@ -97,9 +97,9 @@ export default function Experience() {
       <EffectComposer>
         <Bloom
           mipmapBlur
-          luminanceThreshold={0.78}
+          luminanceThreshold={0.8}
           luminanceSmoothing={0.2}
-          intensity={0.8}
+          intensity={0.5}
         />
         <Vignette offset={0.3} darkness={0.7} />
       </EffectComposer>

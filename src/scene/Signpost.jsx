@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Text } from "@react-three/drei";
 import { groundHeight } from "../terrain/heightfield.js";
 import { FACING_YAW } from "../sections.js";
 
@@ -12,8 +13,9 @@ const BOARD_HI = "#c9a15f";
 const BRACE = "#5f3a22";
 
 // A small low-poly wooden sign. `position` is world [x, 0, z]; it samples the
-// terrain height itself so it sits flush on the ground.
-export default function Signpost({ position, highlight = false }) {
+// terrain height itself so it sits flush on the ground. `label` is painted on
+// the board so each marker is legible without walking up to it.
+export default function Signpost({ position, label, highlight = false }) {
   const [x, , z] = position;
   const y = useMemo(() => groundHeight(x, z), [x, z]);
 
@@ -31,17 +33,36 @@ export default function Signpost({ position, highlight = false }) {
         <meshStandardMaterial color={BRACE} flatShading roughness={1} />
       </mesh>
 
-      {/* board — tilted back to face the raised camera */}
-      <mesh castShadow position={[0, 1.06, 0.06]} rotation-x={BOARD_PITCH}>
-        <boxGeometry args={[1.1, 0.5, 0.08]} />
-        <meshStandardMaterial
-          color={highlight ? BOARD_HI : BOARD}
-          emissive={highlight ? "#3a2a12" : "#000000"}
-          emissiveIntensity={highlight ? 1.4 : 0}
-          flatShading
-          roughness={1}
-        />
-      </mesh>
+      {/* board — tilted back to face the raised camera, with the marker name
+          painted on its face so it reads from across the archipelago */}
+      <group position={[0, 1.06, 0.06]} rotation-x={BOARD_PITCH}>
+        <mesh castShadow>
+          <boxGeometry args={[1.1, 0.5, 0.08]} />
+          <meshStandardMaterial
+            color={highlight ? BOARD_HI : BOARD}
+            emissive={highlight ? "#3a2a12" : "#000000"}
+            emissiveIntensity={highlight ? 1.4 : 0}
+            flatShading
+            roughness={1}
+          />
+        </mesh>
+        {label && (
+          <Text
+            position={[0, 0, 0.05]}
+            fontSize={0.13}
+            maxWidth={0.96}
+            lineHeight={1.05}
+            textAlign="center"
+            anchorX="center"
+            anchorY="middle"
+            color={highlight ? "#fff5e0" : "#f2e2c0"}
+            outlineWidth={0.006}
+            outlineColor="#2a1809"
+          >
+            {label.toUpperCase()}
+          </Text>
+        )}
+      </group>
 
       {/* lantern near the post top — a warm point so signs read at night */}
       <mesh castShadow position={[0.13, 1.18, 0]}>
@@ -49,15 +70,17 @@ export default function Signpost({ position, highlight = false }) {
         <meshStandardMaterial
           color="#ffcf87"
           emissive="#ffb347"
-          emissiveIntensity={2}
+          emissiveIntensity={1.6}
           flatShading
           roughness={1}
         />
       </mesh>
+      {/* Small pool of light — signs cluster inside a zone, so keep each one
+          tight or the whole island blows out warm. */}
       <pointLight
         color="#ffb060"
-        intensity={3}
-        distance={4.5}
+        intensity={1.3}
+        distance={3.4}
         decay={2}
         castShadow={false}
         position={[0.13, 1.18, 0.06]}

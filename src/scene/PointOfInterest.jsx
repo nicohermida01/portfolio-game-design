@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { groundHeight } from "../terrain/heightfield.js";
+import { resolveMarker } from "../sections.js";
 import { useGameStore } from "../store.js";
 import Signpost from "./Signpost.jsx";
 
@@ -14,6 +15,10 @@ export default function PointOfInterest({ marker }) {
   // player, props and signs use).
   const [x, , z] = marker.position;
   const position = useMemo(() => [x, groundHeight(x, z), z], [x, z]);
+
+  // What the sign board reads. Standalone points carry a short `label`
+  // ("Index", "Contact"); zone markers fall back to the content title.
+  const signLabel = marker.label ?? resolveMarker(marker.id).title;
 
   useFrame((state) => {
     if (ringRef.current) {
@@ -29,7 +34,7 @@ export default function PointOfInterest({ marker }) {
   return (
     <>
       {/* The marker itself is a wooden sign. */}
-      <Signpost position={marker.position} highlight={isActive} />
+      <Signpost position={marker.position} label={signLabel} highlight={isActive} />
 
       {/* Spinning ground ring — the "walk up here" affordance. */}
       <group position={position}>

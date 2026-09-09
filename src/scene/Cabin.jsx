@@ -72,17 +72,18 @@ export default function Cabin({ position, scale = 1 }) {
           <meshStandardMaterial
             color="#ffcf87"
             emissive="#ffb347"
-            emissiveIntensity={2}
+            emissiveIntensity={1.6}
             flatShading
             roughness={1}
           />
         </mesh>
 
-        {/* warm light spilling out just past the window */}
+        {/* warm light spilling out just past the window — kept low so a cluster
+            of cabins doesn't wash its island orange */}
         <pointLight
           color="#ffb060"
-          intensity={6}
-          distance={7}
+          intensity={2.4}
+          distance={5}
           decay={2}
           castShadow={false}
           position={[0.72, 1.1, 1.5]}
