@@ -88,6 +88,9 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   top. Tree canopy greens left as-is for now.
   Files: `src/terrain/heightfield.js` (`BASE_COLOR`).
 
-- [ ] **HUD hint text** ("Move with W A S D — walk up to a marker") is low
-  contrast and clips at the bottom-left edge.
-  Files: `src/scene/ThreeScene.jsx` / HUD styles.
+- [x] **HUD hint text** was `rgba(30,40,32,0.7)` (a dark green for the old light
+  backdrop) — invisible on the night scene, and the `kbd` caps were dark-on-dark.
+  Now white 78% + `text-shadow`; `kbd` caps light translucent bg/border/text;
+  `bottom` 24 → 28 and `max-width: calc(100vw - 48px)` so it wraps instead of
+  clipping; on touch it moves to the top, clear of the joystick corner.
+  Files: `src/styles.css` (`.hud`).
