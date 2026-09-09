@@ -136,12 +136,13 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   lit, Index cabin glow is warm but contained, campfire still the key light.
   Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`, `src/scene/Experience.jsx`.
 
-- [~] **Too many real-time point lights.** ~8 signs + 6 cabins + campfire ≈ 15
-  dynamic lights in forward rendering — costs on mid/low GPUs and muddies the
-  scene. First pass only dialled each one down (see above). Still to do: move
-  sign/cabin lights to `emissive` + bloom and keep at most one real light per
-  island; campfire stays the only shadow-caster.
-  Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`.
+- [x] **Too many real-time point lights.** Dropped every per-signpost and
+  per-cabin `pointLight` (~14). The lantern/window emissive (bumped to 2.4 / 2.6)
+  + bloom carry the glow; `Experience.jsx` now runs one shadowless warm fill
+  (`ISLAND_FILLS`) over each island's cabin cluster. Down to 5 point lights,
+  campfire still the only shadow-caster. Verified: all four islands read, no
+  orange blowout, signs still legible.
+  Files: `src/scene/Cabin.jsx`, `src/scene/Signpost.jsx`, `src/scene/Experience.jsx`.
 
 - [x] **Activation ring reads as a broken spinning arc**, not a "stand here" pad.
   Replaced the single spinning ring with a filled `circleGeometry` disc + a thin
@@ -197,19 +198,30 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   (`Props.jsx`). Both now `useMemo` it, matching `Cabin` / `Signpost`.
   Files: `src/scene/Props.jsx`.
 
-- [ ] **No instancing.** ~28 trees (×3 meshes each), 10 rocks, 6 cabins — each a
-  separate `RigidBody` + `mesh`. `InstancedMesh` for trees/rocks would cut a lot
-  of draw calls; colliders can stay separate or move to a fixed compound.
-  Files: `src/scene/Props.jsx`, `src/scene/Buildings.jsx`.
+- [x] **No instancing.** Trees (3 meshes each) + rocks were each their own
+  `RigidBody` + `mesh` (~114 objects / ~84 draw calls). Now 4 `drei` `<Instances>`
+  draws (trunk / lower canopy / upper canopy / rock) + one shared fixed
+  `RigidBody` holding every collider (tree `CylinderCollider`, rock
+  `BallCollider`). Scatter unchanged and still deterministic. Cabins left as-is
+  (only 6, and each has its own collider + emissive window).
+  Files: `src/scene/Props.jsx`.
 
-- [ ] **Trimesh island colliders + capsule player.** Rapier trimesh/capsule
-  contact snags on the seams between radial segments — the player can catch on
-  ring edges. A heightfield collider or a convex/cone per island is smoother.
+- [-] **Trimesh island colliders + capsule player.** Deferred. Swapping to
+  `colliders="hull"` makes the player float above the visual mesh near island
+  rims and over `groundHeight` noise dips (the hull bridges every concavity) —
+  that regresses the earlier "island mesh follows the terrain height" fix. The
+  correct fix is a Rapier `HeightfieldCollider` sampled from `groundHeight` on a
+  grid per island: exact *and* seam-free. It's the riskiest change in the pass
+  and can't be verified from a screenshot, and it's a feel fix, not a perf win —
+  so it's parked until the seam-snag is actually felt in play.
   Files: `src/scene/Terrain.jsx`, `src/terrain/heightfield.js`.
 
-- [ ] **`Water` recomputes 1,225 vertices on the CPU every frame** (position +
-  colour + two `needsUpdate`). Fine on desktop; natural candidate for a vertex
-  shader (`onBeforeCompile` or a small `shaderMaterial`). Low priority.
+- [-] **`Water` recomputes 1,225 vertices on the CPU every frame.** Deferred.
+  The win is ~0.3 ms/frame. Moving it to the GPU means `onBeforeCompile` on a
+  `meshBasicMaterial`, which shares three's program cache with the other basic
+  material in `WaterRings` (needs a `customProgramCacheKey`) and depends on the
+  `fog` chunk being present to inject into — fragile for the payoff. Revisit if
+  a real frame-budget problem shows up, or bump `SEG` down instead.
   Files: `src/scene/Water.jsx`.
 
 - [x] **Fireflies drift over open sea.** One global `<Sparkles>` box → one
