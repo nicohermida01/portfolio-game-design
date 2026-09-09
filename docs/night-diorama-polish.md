@@ -19,15 +19,19 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   the punchy "Entering X" moment.
   Files: `src/scene/ZoneLabel.jsx`, `src/scene/Experience.jsx`.
 
-- [ ] **Everything falls off into pure black.** Bridges lead to islands you
-  can't see at all. Raise fog `far`, add a little fill light on the far
-  islands, or make the water read so there's a horizon instead of void.
-  Files: `src/scene/Experience.jsx` (fog / lights), `src/scene/Water.jsx`.
+- [x] **Everything falls off into pure black.** Bridges led to islands you
+  couldn't see. Fog `22/55` → `30/92` (only the far edge fades), bg/fog color
+  a touch bluer (`#0b1a2b` → `#0e2136`), hemisphere up + a dim non-shadow
+  back-fill directional so shadow sides never go pure black. The readable water
+  (below) now gives a horizon instead of a void edge.
+  Files: `src/scene/Experience.jsx`.
 
-- [ ] **Water is an empty black plane.** Islands look like they float in space,
-  not an archipelago. Give the sea a readable tint, some moon specular, and a
-  subtle wobble (vertex or scrolling normal). Today `Water.jsx` contributes
-  nothing.
+- [x] **Water is an empty black plane.** Two lit-material tries came out as a
+  dark slab — night lighting is too weak to lift blue off black. Switched to an
+  unlit `meshBasicMaterial` sea driven purely by vertex colours: a coarse plane
+  rides three crossed sine waves and each vertex is repainted trough-blue →
+  crest-blue every frame, so faceted bands roll across it. Palette graded down
+  to keep the night mood after it first read too tropical.
   Files: `src/scene/Water.jsx`.
 
 ## Medium impact

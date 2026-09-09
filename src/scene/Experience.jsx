@@ -21,13 +21,14 @@ const DEBUG_PHYSICS = false;
 export default function Experience() {
   return (
     <>
-      {/* Deep night-blue backdrop + tight fog so the world fades into dark. */}
-      <color attach="background" args={["#0b1a2b"]} />
-      <fog attach="fog" args={["#0b1a2b", 22, 55]} />
+      {/* Deep night-blue backdrop + fog that only swallows the far edge, so
+          bridged islands stay readable and the sea fades to a horizon. */}
+      <color attach="background" args={["#0e2136"]} />
+      <fog attach="fog" args={["#0e2136", 30, 92]} />
 
       {/* Night lighting: cool ambient fill + a moon directional bright enough
           to read the islands, while sky and water stay dark. */}
-      <ambientLight intensity={0.6} color="#4a6a90" />
+      <ambientLight intensity={0.42} color="#3f5a7d" />
       <directionalLight
         position={[10, 14, 6]}
         intensity={1.1}
@@ -39,7 +40,9 @@ export default function Experience() {
         shadow-camera-top={22}
         shadow-camera-bottom={-22}
       />
-      <hemisphereLight args={["#2a3a58", "#0a0f16", 0.62]} />
+      <hemisphereLight args={["#2a3a58", "#0a0f16", 0.5]} />
+      {/* Dim back-fill so the shadow side of far islands never goes pure black. */}
+      <directionalLight position={[-9, 6, -11]} intensity={0.16} color="#3a4a6a" />
 
       <Physics debug={DEBUG_PHYSICS}>
         <Terrain />
