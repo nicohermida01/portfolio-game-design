@@ -171,10 +171,17 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   Verified in render: approaches are clear.
   Files: `src/scene/Props.jsx`, `src/sections.js` (`BRIDGE_FEET`).
 
-- [ ] **Framing.** Fixed iso camera + follow leaves Work half off-screen with its
-  label cut. Pull the camera back a touch (raise `CAMERA_OFFSET` or lower the
-  `fov` of 40) or move island centres inward toward the origin.
-  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`, `src/sections.js`.
+- [x] **Framing.** Fixed iso camera + follow left Work half off-screen with its
+  label cut. Pulled the camera back on the same diagonal: `CAMERA_OFFSET`
+  `(10,10,10)` → `(13.5,13.5,13.5)` (and the matching `<Canvas>` initial
+  position). Scaling uniformly keeps the iso angle and the movement basis
+  unchanged. Fog pushed out `30/92` → `38/104` so the extra distance doesn't
+  haze the far islands. Verified: standing on the hub you now see Work, Contact
+  and both their labels in one frame; Projects still sits just off the right
+  edge (the archipelago is wider than any single view), and walking that way
+  brings it in. Chose zoom over moving island centres — that would ripple
+  through every hard-coded house/marker coord in `sections.js`.
+  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`, `src/scene/Experience.jsx`.
 
 ## Medium impact — code / consistency
 
