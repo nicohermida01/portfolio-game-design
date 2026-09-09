@@ -12,7 +12,10 @@ import ModelErrorBoundary from "./ModelErrorBoundary.jsx";
 
 const SPEED = 6; // world units per second
 const TURN_SMOOTHING = 0.0004; // smaller = snappier turn toward movement
-const CAMERA_OFFSET = new THREE.Vector3(10, 10, 10);
+// Pulled back from (10,10,10) so a neighbouring island (and its label) stays in
+// frame when you're standing on the hub. Kept on the diagonal so the iso angle
+// and the movement basis below are unchanged.
+const CAMERA_OFFSET = new THREE.Vector3(13.5, 13.5, 13.5);
 
 // Camera-relative ground basis, derived once from the fixed iso camera offset.
 // FWD points "into the screen" (away from the camera along the ground), RIGHT

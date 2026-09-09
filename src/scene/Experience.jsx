@@ -24,7 +24,7 @@ export default function Experience() {
       {/* Deep night-blue backdrop + fog that only swallows the far edge, so
           bridged islands stay readable and the sea fades to a horizon. */}
       <color attach="background" args={["#0e2136"]} />
-      <fog attach="fog" args={["#0e2136", 30, 92]} />
+      <fog attach="fog" args={["#0e2136", 38, 104]} />
 
       {/* Night lighting: cool ambient fill + a moon directional bright enough
           to read the islands, while sky and water stay dark. */}
