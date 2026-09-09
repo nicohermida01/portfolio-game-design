@@ -64,27 +64,20 @@ export default function Signpost({ position, label, highlight = false }) {
         )}
       </group>
 
-      {/* lantern near the post top — a warm point so signs read at night */}
+      {/* Lantern near the post top. No real light here — signs cluster inside a
+          zone, so 8 point lights just muddied the scene; the emissive + bloom
+          carry the glow and the per-island fill light (Experience.jsx) does the
+          ambient warmth. */}
       <mesh castShadow position={[0.13, 1.18, 0]}>
         <boxGeometry args={[0.16, 0.22, 0.16]} />
         <meshStandardMaterial
           color="#ffcf87"
           emissive="#ffb347"
-          emissiveIntensity={1.6}
+          emissiveIntensity={2.4}
           flatShading
           roughness={1}
         />
       </mesh>
-      {/* Small pool of light — signs cluster inside a zone, so keep each one
-          tight or the whole island blows out warm. */}
-      <pointLight
-        color="#ffb060"
-        intensity={1.3}
-        distance={3.4}
-        decay={2}
-        castShadow={false}
-        position={[0.13, 1.18, 0.06]}
-      />
     </group>
   );
 }

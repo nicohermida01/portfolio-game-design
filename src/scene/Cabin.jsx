@@ -66,28 +66,20 @@ export default function Cabin({ position, scale = 1 }) {
           <meshStandardMaterial color={DOOR} flatShading roughness={1} />
         </mesh>
 
-        {/* warm window on the front wall, beside the door — glows at night */}
+        {/* warm window on the front wall, beside the door — glows at night.
+            No point light per cabin (6 of them washed their islands orange);
+            the emissive + bloom carry the glow, and Experience.jsx runs one
+            soft warm fill light per island. */}
         <mesh position={[0.72, 0.95, 0.92]}>
           <boxGeometry args={[0.42, 0.42, 0.06]} />
           <meshStandardMaterial
             color="#ffcf87"
             emissive="#ffb347"
-            emissiveIntensity={1.6}
+            emissiveIntensity={2.6}
             flatShading
             roughness={1}
           />
         </mesh>
-
-        {/* warm light spilling out just past the window — kept low so a cluster
-            of cabins doesn't wash its island orange */}
-        <pointLight
-          color="#ffb060"
-          intensity={2.4}
-          distance={5}
-          decay={2}
-          castShadow={false}
-          position={[0.72, 1.1, 1.5]}
-        />
       </group>
     </RigidBody>
   );

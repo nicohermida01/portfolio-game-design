@@ -1,7 +1,20 @@
 import { Physics } from "@react-three/rapier";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import { MARKERS, POINTS, ZONES, BRIDGES } from "../sections.js";
+import { MARKERS, POINTS, ZONES, BRIDGES, ISLANDS, HOUSES } from "../sections.js";
 import { groundHeight } from "../terrain/heightfield.js";
+
+// One soft warm fill light per island, sat over its building cluster. This
+// replaces the ~14 per-cabin / per-sign point lights that used to muddy the
+// scene — now it's the campfire (the only shadow-caster) plus these four, all
+// shadowless.
+const ISLAND_FILLS = ISLANDS.map((isl) => {
+  const houses = HOUSES.filter((h) => h.id.includes(isl.id));
+  const cx = houses.reduce((s, h) => s + h.position[0], isl.center[0]) /
+    (houses.length + 1);
+  const cz = houses.reduce((s, h) => s + h.position[2], isl.center[1]) /
+    (houses.length + 1);
+  return { id: isl.id, position: [cx, groundHeight(cx, cz) + 2.4, cz], distance: isl.radius * 2.4 };
+});
 import Terrain from "./Terrain.jsx";
 import Props from "./Props.jsx";
 import Buildings from "./Buildings.jsx";
@@ -47,6 +60,19 @@ export default function Experience() {
       <hemisphereLight args={["#2a3a58", "#0a0f16", 0.5]} />
       {/* Dim back-fill so the shadow side of far islands never goes pure black. */}
       <directionalLight position={[-9, 6, -11]} intensity={0.16} color="#3a4a6a" />
+
+      {/* Warm fill over each island's cabins (see ISLAND_FILLS above). */}
+      {ISLAND_FILLS.map((f) => (
+        <pointLight
+          key={f.id}
+          position={f.position}
+          color="#ffb266"
+          intensity={4.2}
+          distance={f.distance}
+          decay={2}
+          castShadow={false}
+        />
+      ))}
 
       <Physics debug={DEBUG_PHYSICS}>
         <Terrain />
