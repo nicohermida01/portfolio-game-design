@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useGameStore } from "../store.js";
 import { resolveMarker } from "../sections.js";
 
@@ -6,12 +7,34 @@ import { resolveMarker } from "../sections.js";
 // resolveMarker(), so game mode and page mode never drift apart.
 export default function Panel() {
   const marker = useGameStore((s) => s.activeMarker);
+  const dismiss = useGameStore((s) => s.dismissActiveMarker);
+
+  // Esc closes the panel without having to walk away from the sign.
+  useEffect(() => {
+    if (!marker) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") dismiss();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [marker, dismiss]);
+
   if (!marker) return null;
 
   const c = resolveMarker(marker.id);
 
   return (
     <aside className="panel">
+      <button
+        type="button"
+        className="panel-close"
+        onClick={dismiss}
+        aria-label="Close section"
+        title="Close (Esc)"
+      >
+        ×
+      </button>
+
       <span className="tag">{c.tag}</span>
       <h2>{c.title}</h2>
 

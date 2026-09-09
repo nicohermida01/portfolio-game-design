@@ -159,9 +159,41 @@ body {
   }
 }
 
+.panel-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(242, 242, 247, 0.7);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.panel-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.panel-close:focus-visible {
+  outline: 2px solid #8a8aff;
+  outline-offset: 2px;
+}
+
 .panel .tag {
   display: inline-block;
   margin-bottom: 12px;
+  padding-right: 22px; /* clear the close button */
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -242,6 +274,44 @@ body {
 .panel-links a:hover,
 .panel-link:hover {
   text-decoration: underline;
+}
+
+/* ======================================================================
+   3D mode — first-run welcome line
+   ====================================================================== */
+.intro-card {
+  position: absolute;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%);
+  max-width: min(440px, calc(100vw - 48px));
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(16, 18, 30, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(242, 242, 247, 0.9);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  animation: intro-in 0.4s ease-out;
+}
+
+@keyframes intro-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
+  }
+}
+
+@media (pointer: coarse) {
+  /* HUD hint moves to the top on touch; keep the card clear of the joystick. */
+  .intro-card {
+    bottom: auto;
+    top: 56px;
+  }
 }
 
 /* ======================================================================
