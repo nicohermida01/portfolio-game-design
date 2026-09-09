@@ -134,6 +134,18 @@ export default function Player() {
           whatever model we draw inside. */}
       <CapsuleCollider args={[0.35, 0.35]} />
 
+      {/* Soft cool key light that travels with the player, so the character
+          never sinks into black on a dark bridge or a far island. Sits between
+          the player and the fixed camera; no shadow, short reach. */}
+      <pointLight
+        color="#aac2e4"
+        intensity={3.2}
+        distance={5.5}
+        decay={2}
+        castShadow={false}
+        position={[1.4, 2.4, 1.4]}
+      />
+
       <group ref={visualRef}>
         {CHARACTER.present ? (
           <ModelErrorBoundary fallback={<Placeholder />}>

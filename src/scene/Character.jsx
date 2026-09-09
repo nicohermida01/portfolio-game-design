@@ -24,10 +24,24 @@ export default function Character() {
   const { actions } = useAnimations(animations, group);
   const moving = useGameStore((s) => s.moving);
 
-  // GLTF meshes don't cast shadows unless we ask them to.
+  // GLTF meshes don't cast shadows unless we ask them to. This model is an
+  // FBX→glTF export with a bogus `metallicFactor` (0.4) and no real PBR maps —
+  // under the dim night lighting a half-metal surface just reflects the near
+  // black sky and renders as a dark blob. Force it fully dielectric so the
+  // albedo texture actually shows.
   useEffect(() => {
     scene.traverse((o) => {
-      if (o.isMesh) o.castShadow = true;
+      if (!o.isMesh) return;
+      o.castShadow = true;
+      o.receiveShadow = true;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      for (const m of mats) {
+        if (!m) continue;
+        if ("metalness" in m) m.metalness = 0;
+        if ("roughness" in m) m.roughness = 1;
+        if ("envMapIntensity" in m) m.envMapIntensity = 0;
+        m.needsUpdate = true;
+      }
     });
   }, [scene]);
 
