@@ -232,6 +232,7 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
 ## Low impact — nice to have
 
 - [ ] **No audio.** Campfire crackle, footsteps, water lap, night ambience.
+  Deferred by decision — do this last, once everything else is settled.
   Files: (new).
 
 - [x] **Minimal onboarding.** Three pieces:
@@ -248,18 +249,15 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   Files: `src/ui/Intro.jsx`, `src/ui/Panel.jsx`, `src/store.js`,
   `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`, `src/styles.css`.
 
-- [~] **Character rendered as a dark blob.** `CHARACTER.present` is actually
+- [x] **Character rendered as a dark blob.** `CHARACTER.present` is actually
   `true` — it's `public/models/Steve.glb`, a Quaternius rig with a Minecraft
   "Steve" atlas. The FBX→glTF export set `metallicFactor: 0.4` with no PBR maps,
   so under the dim night lighting the half-metal surface just reflected the near
   black sky. Fix: `Character.jsx` now forces every material `metalness = 0`,
   `roughness = 1`, `envMapIntensity = 0` on load, and `Player.jsx` carries a
   soft cool follow light (`#aac2e4`, intensity 3.2, distance 5.5, no shadow) so
-  the character never sinks into black on a dark bridge or far island. Verified:
-  body colours now read.
-  Still open: the model itself is low-res Steve with a dark-hair head and reads
-  small on screen; the idle pose looks like a crouch. A nicer CC0 model
-  (Quaternius "Animated Characters") would lift it — can't download one from
-  this environment. Also `src/character.js` header comments still say
-  `present: false` / placeholder — stale, worth a cleanup pass.
-  Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`, `src/character.js`.
+  the character never sinks into black on a dark bridge or far island.
+  **Decision:** keep the Steve model — the readability fix is enough; not
+  chasing a fancier CC0 model. Reads small and the idle pose is a bit
+  crouched, but that's acceptable for a background walkable avatar.
+  Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`.
