@@ -41,12 +41,12 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   reposition (e.g. bottom-left, or auto-flip away from the marker).
   Files: `src/ui/Panel.jsx`, `src/ui/page.css` (or panel styles).
 
-- [ ] **Directional shadow frustum too small for the new layout.** It's ±22 but
-  islands now reach ±20+, so far islands get no shadows and props/cabins look
-  pasted on. Widen `shadow-camera-*`, or add cheap fake contact shadows
-  (dark radial-gradient plane under trees/cabins).
-  Files: `src/scene/Experience.jsx`, maybe `src/scene/Props.jsx` /
-  `src/scene/Cabin.jsx`.
+- [x] **Directional shadow frustum too small for the new layout.** Bounds ±22 →
+  ±30 (covers the whole archipelago + margin); `shadow-mapSize` 2048 → 4096 to
+  hold density over the bigger area; explicit `near/far` (1/65); added
+  `shadow-bias -0.0004` + `shadow-normalBias 0.04` against acne. Note: 4096 map
+  is ~64MB VRAM — drop to 3072 if it bites on low-end.
+  Files: `src/scene/Experience.jsx`.
 
 - [ ] **Re-check building seating after the heightfield change.** `SHORE_BOTTOM`
   moved from -1.4 to -0.6; some cabins on island edges may now clip into or

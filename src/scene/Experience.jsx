@@ -34,11 +34,15 @@ export default function Experience() {
         intensity={1.1}
         color="#9fb4d4"
         castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-22}
-        shadow-camera-right={22}
-        shadow-camera-top={22}
-        shadow-camera-bottom={-22}
+        shadow-mapSize={[4096, 4096]}
+        shadow-camera-near={1}
+        shadow-camera-far={65}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+        shadow-bias={-0.0004}
+        shadow-normalBias={0.04}
       />
       <hemisphereLight args={["#2a3a58", "#0a0f16", 0.5]} />
       {/* Dim back-fill so the shadow side of far islands never goes pure black. */}
