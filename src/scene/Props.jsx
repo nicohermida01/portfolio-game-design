@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { RigidBody, CylinderCollider } from "@react-three/rapier";
 import { groundHeight } from "../terrain/heightfield.js";
-import { MARKERS, HOUSES, TO_CAMERA, ISLANDS } from "../sections.js";
+import { MARKERS, HOUSES, TO_CAMERA, ISLANDS, BRIDGE_FEET } from "../sections.js";
 
 const SPAWN_CLEARANCE = 3; // keep the world-origin spawn + campfire area clear
 const MARKER_CLEARANCE = 2.5; // keep section markers clear
 const HOUSE_CLEARANCE = 3.2; // keep cabins clear
+const BRIDGE_FOOT_CLEARANCE = 2.6; // keep bridge approaches walkable + unblocked
 // Keep a clear sightline from every sign toward the fixed camera: no scatter
 // within this half-width of the marker->camera ray, out to this far.
 const SIGHTLINE_HALF_WIDTH = 1.9;
@@ -43,6 +44,11 @@ function scatter(count, seed, island, innerR, outerR) {
     );
     if (onHouse) continue;
 
+    const onBridgeFoot = BRIDGE_FEET.some(
+      ([bx, bz]) => Math.hypot(x - bx, z - bz) < BRIDGE_FOOT_CLEARANCE,
+    );
+    if (onBridgeFoot) continue;
+
     // Reject anything sitting on a sign's line of sight to the camera.
     const blocksSign = MARKERS.some((m) => {
       const wx = x - m.position[0];
@@ -61,11 +67,12 @@ function scatter(count, seed, island, innerR, outerR) {
 }
 
 function Tree({ x, z, rot, scale }) {
+  const y = useMemo(() => groundHeight(x, z), [x, z]);
   return (
     <RigidBody
       type="fixed"
       colliders={false}
-      position={[x, groundHeight(x, z), z]}
+      position={[x, y, z]}
       rotation={[0, rot, 0]}
     >
       {/* One simple cylinder collider around the trunk / lower canopy. */}
@@ -92,11 +99,12 @@ function Tree({ x, z, rot, scale }) {
 }
 
 function Rock({ x, z, rot, scale }) {
+  const y = useMemo(() => groundHeight(x, z) + 0.15 * scale, [x, z, scale]);
   return (
     <RigidBody
       type="fixed"
       colliders="hull"
-      position={[x, groundHeight(x, z) + 0.15 * scale, z]}
+      position={[x, y, z]}
       rotation={[rot * 0.3, rot, rot * 0.2]}
     >
       <mesh castShadow receiveShadow scale={scale}>

@@ -85,6 +85,23 @@ export const BRIDGES = [
   { from: "index", to: "contact" },
 ];
 
+// The [x, z] points where each bridge lands on an island shore. Must match the
+// foot maths in Bridge.jsx (`center + unit * radius * 0.9`). Prop scatter keeps
+// clear of these so nothing spawns across a bridge approach.
+export const BRIDGE_FEET = BRIDGES.flatMap(({ from, to }) => {
+  const a = ISLANDS.find((i) => i.id === from);
+  const b = ISLANDS.find((i) => i.id === to);
+  const dx = b.center[0] - a.center[0];
+  const dz = b.center[1] - a.center[1];
+  const s = Math.hypot(dx, dz) || 1;
+  const ux = dx / s;
+  const uz = dz / s;
+  return [
+    [a.center[0] + ux * a.radius * 0.9, a.center[1] + uz * a.radius * 0.9],
+    [b.center[0] - ux * b.radius * 0.9, b.center[1] - uz * b.radius * 0.9],
+  ];
+});
+
 // Flat list of every marker on the map, each carrying the zone tint it renders
 // in (null for standalone points). Player proximity + Experience iterate this.
 export const MARKERS = [
