@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { RigidBody, CylinderCollider } from "@react-three/rapier";
+import { Instances, Instance } from "@react-three/drei";
+import { RigidBody, CylinderCollider, BallCollider } from "@react-three/rapier";
 import { groundHeight } from "../terrain/heightfield.js";
 import { MARKERS, HOUSES, TO_CAMERA, ISLANDS, BRIDGE_FEET } from "../sections.js";
 
@@ -18,7 +19,8 @@ const ROCK_COUNTS = { index: 2, contact: 2, work: 3, projects: 3 };
 
 // Deterministic scatter across one island's disc: polar around its centre,
 // same props in the same spots every reload. Coords are absolute world units,
-// so the marker / house / sightline rejection checks work unchanged.
+// so the marker / house / sightline rejection checks work unchanged. `y` is
+// sampled here so both the instanced mesh and its collider use one value.
 function scatter(count, seed, island, innerR, outerR) {
   const rand = seededRandom(seed);
   const out = [];
@@ -61,96 +63,107 @@ function scatter(count, seed, island, innerR, outerR) {
     });
     if (blocksSign) continue;
 
-    out.push({ x, z, rot: rand() * Math.PI * 2, scale: 0.8 + rand() * 0.6 });
+    out.push({
+      x,
+      z,
+      y: groundHeight(x, z),
+      rot: rand() * Math.PI * 2,
+      scale: 0.8 + rand() * 0.6,
+    });
   }
   return out;
 }
 
-function Tree({ x, z, rot, scale }) {
-  const y = useMemo(() => groundHeight(x, z), [x, z]);
-  return (
-    <RigidBody
-      type="fixed"
-      colliders={false}
-      position={[x, y, z]}
-      rotation={[0, rot, 0]}
-    >
-      {/* One simple cylinder collider around the trunk / lower canopy. */}
-      <CylinderCollider
-        args={[1.4 * scale, 0.5 * scale]}
-        position={[0, 1.4 * scale, 0]}
-      />
-      <group scale={scale}>
-        <mesh castShadow position={[0, 0.5, 0]}>
-          <cylinderGeometry args={[0.12, 0.16, 1, 6]} />
-          <meshStandardMaterial color="#8a5a3c" flatShading roughness={1} />
-        </mesh>
-        <mesh castShadow position={[0, 1.5, 0]}>
-          <coneGeometry args={[0.7, 1.6, 7]} />
-          <meshStandardMaterial color="#3f8f4f" flatShading roughness={1} />
-        </mesh>
-        <mesh castShadow position={[0, 2.3, 0]}>
-          <coneGeometry args={[0.5, 1.2, 7]} />
-          <meshStandardMaterial color="#4a9d5b" flatShading roughness={1} />
-        </mesh>
-      </group>
-    </RigidBody>
-  );
-}
-
-function Rock({ x, z, rot, scale }) {
-  const y = useMemo(() => groundHeight(x, z) + 0.15 * scale, [x, z, scale]);
-  return (
-    <RigidBody
-      type="fixed"
-      colliders="hull"
-      position={[x, y, z]}
-      rotation={[rot * 0.3, rot, rot * 0.2]}
-    >
-      <mesh castShadow receiveShadow scale={scale}>
-        <icosahedronGeometry args={[0.4, 0]} />
-        <meshStandardMaterial color="#8d8d99" flatShading roughness={1} />
-      </mesh>
-    </RigidBody>
+// The whole scatter is deterministic and layout-static, so build it once.
+function buildScatter(counts, seedBase) {
+  return ISLANDS.flatMap((isl, i) =>
+    scatter(
+      counts[isl.id] ?? 0,
+      seedBase + i * 17,
+      isl,
+      isl.radius * 0.15,
+      isl.radius - 0.9,
+    ),
   );
 }
 
 export default function Props() {
-  const trees = useMemo(
-    () =>
-      ISLANDS.flatMap((isl, i) =>
-        scatter(
-          TREE_COUNTS[isl.id] ?? 0,
-          1337 + i * 17,
-          isl,
-          isl.radius * 0.15,
-          isl.radius - 0.9,
-        ),
-      ),
-    [],
-  );
-  const rocks = useMemo(
-    () =>
-      ISLANDS.flatMap((isl, i) =>
-        scatter(
-          ROCK_COUNTS[isl.id] ?? 0,
-          4242 + i * 17,
-          isl,
-          isl.radius * 0.15,
-          isl.radius - 0.9,
-        ),
-      ),
-    [],
-  );
+  const trees = useMemo(() => buildScatter(TREE_COUNTS, 1337), []);
+  const rocks = useMemo(() => buildScatter(ROCK_COUNTS, 4242), []);
 
   return (
     <>
-      {trees.map((t, i) => (
-        <Tree key={`tree-${i}`} {...t} />
-      ))}
-      {rocks.map((r, i) => (
-        <Rock key={`rock-${i}`} {...r} />
-      ))}
+      {/* --- Visuals: one instanced draw per part, no physics body. --- */}
+      {/* Trunk */}
+      <Instances limit={trees.length} castShadow receiveShadow>
+        <cylinderGeometry args={[0.12, 0.16, 1, 6]} />
+        <meshStandardMaterial color="#8a5a3c" flatShading roughness={1} />
+        {trees.map((t, i) => (
+          <Instance
+            key={i}
+            position={[t.x, t.y + 0.5 * t.scale, t.z]}
+            rotation={[0, t.rot, 0]}
+            scale={t.scale}
+          />
+        ))}
+      </Instances>
+      {/* Lower canopy */}
+      <Instances limit={trees.length} castShadow>
+        <coneGeometry args={[0.7, 1.6, 7]} />
+        <meshStandardMaterial color="#3f8f4f" flatShading roughness={1} />
+        {trees.map((t, i) => (
+          <Instance
+            key={i}
+            position={[t.x, t.y + 1.5 * t.scale, t.z]}
+            rotation={[0, t.rot, 0]}
+            scale={t.scale}
+          />
+        ))}
+      </Instances>
+      {/* Upper canopy */}
+      <Instances limit={trees.length} castShadow>
+        <coneGeometry args={[0.5, 1.2, 7]} />
+        <meshStandardMaterial color="#4a9d5b" flatShading roughness={1} />
+        {trees.map((t, i) => (
+          <Instance
+            key={i}
+            position={[t.x, t.y + 2.3 * t.scale, t.z]}
+            rotation={[0, t.rot, 0]}
+            scale={t.scale}
+          />
+        ))}
+      </Instances>
+      {/* Rocks */}
+      <Instances limit={rocks.length} castShadow receiveShadow>
+        <icosahedronGeometry args={[0.4, 0]} />
+        <meshStandardMaterial color="#8d8d99" flatShading roughness={1} />
+        {rocks.map((r, i) => (
+          <Instance
+            key={i}
+            position={[r.x, r.y + 0.15 * r.scale, r.z]}
+            rotation={[r.rot * 0.3, r.rot, r.rot * 0.2]}
+            scale={r.scale}
+          />
+        ))}
+      </Instances>
+
+      {/* --- Physics: every collider on one fixed body. --- */}
+      <RigidBody type="fixed" colliders={false}>
+        {trees.map((t, i) => (
+          <CylinderCollider
+            key={`tc-${i}`}
+            args={[1.4 * t.scale, 0.5 * t.scale]}
+            position={[t.x, t.y + 1.4 * t.scale, t.z]}
+          />
+        ))}
+        {rocks.map((r, i) => (
+          <BallCollider
+            key={`rc-${i}`}
+            args={[0.4 * r.scale]}
+            position={[r.x, r.y + 0.15 * r.scale, r.z]}
+          />
+        ))}
+      </RigidBody>
     </>
   );
 }
