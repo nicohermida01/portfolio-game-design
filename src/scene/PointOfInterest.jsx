@@ -17,12 +17,14 @@ export default function PointOfInterest({ marker }) {
 
   useFrame((state) => {
     if (ringRef.current) {
-      ringRef.current.rotation.z = state.clock.elapsedTime * 0.6;
+      ringRef.current.rotation.z = state.clock.elapsedTime * 0.35;
     }
   });
 
-  // Zone markers ring in their zone's tint; standalone points use the default.
-  const ringColor = isActive ? "#ffd166" : (marker.color ?? "#8a8aff");
+  // Zone markers ring in their zone's tint; standalone points use a soft
+  // lavender. Active just warms it slightly — no loud yellow competing with
+  // the campfire.
+  const ringColor = isActive ? "#ffdf9e" : (marker.color ?? "#7f86c8");
 
   return (
     <>
@@ -31,12 +33,13 @@ export default function PointOfInterest({ marker }) {
 
       {/* Spinning ground ring — the "walk up here" affordance. */}
       <group position={position}>
-        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.03, 0]}>
-          <ringGeometry args={[0.9, 1.1, 32]} />
+        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.05, 0]}>
+          <ringGeometry args={[1.02, 1.14, 48]} />
           <meshBasicMaterial
             color={ringColor}
             transparent
-            opacity={isActive ? 0.95 : 0.5}
+            depthWrite={false}
+            opacity={isActive ? 0.55 : 0.24}
           />
         </mesh>
       </group>

@@ -17,7 +17,7 @@ export const GROUND_SIZE = 40; // world units — kept for the Boundary walls
 export const WATER_LEVEL = -0.9;
 
 // Base grass colour + how many world units the zone tint fades over at its rim.
-const BASE_COLOR = new THREE.Color("#4c9a5a");
+const BASE_COLOR = new THREE.Color("#3c6e46"); // muted, slightly cool green — night grass
 const EDGE_BLEND = 1.6;
 
 // Deterministic noise: same layout on every reload.

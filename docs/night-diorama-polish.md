@@ -65,13 +65,16 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   sparks. Widen the spread, vary particle size, shorten lifetime.
   Files: `src/scene/Campfire.jsx`.
 
-- [ ] **Activation ring is a big bright yellow.** Clashes with the campfire.
-  Make it subtler and/or tint it to the marker's zone color.
+- [x] **Activation ring is a big bright yellow.** Active color `#ffd166` →
+  soft warm white `#ffdf9e`; opacity 0.95/0.5 → 0.55/0.24; thinner band
+  (0.9–1.1 → 1.02–1.14, 48 segs), slower spin, `depthWrite` off. Inactive
+  points now a softer lavender `#7f86c8`.
   Files: `src/scene/PointOfInterest.jsx`.
 
-- [ ] **Grass is too saturated for a night scene.** Desaturate the base terrain
-  green a touch, or cool the ambient.
-  Files: `src/terrain/heightfield.js` (`BASE_COLOR`), `src/scene/Experience.jsx`.
+- [x] **Grass is too saturated for a night scene.** `BASE_COLOR` `#4c9a5a`
+  (bright lime) → `#3c6e46` (muted, slightly cool). Zone tints still blend on
+  top. Tree canopy greens left as-is for now.
+  Files: `src/terrain/heightfield.js` (`BASE_COLOR`).
 
 - [ ] **HUD hint text** ("Move with W A S D — walk up to a marker") is low
   contrast and clips at the bottom-left edge.
