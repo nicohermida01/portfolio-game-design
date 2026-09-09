@@ -68,7 +68,7 @@ export default function Experience() {
           key={`label-${zone.id}`}
           position={[
             zone.center[0],
-            groundHeight(zone.center[0], zone.center[1]) + 4,
+            groundHeight(zone.center[0], zone.center[1]) + 2.8,
             zone.center[1],
           ]}
           label={zone.title}
@@ -79,7 +79,7 @@ export default function Experience() {
           key={`label-${point.id}`}
           position={[
             point.position[0],
-            groundHeight(point.position[0], point.position[2]) + 3.5,
+            groundHeight(point.position[0], point.position[2]) + 2.6,
             point.position[2],
           ]}
           label={point.label}
