@@ -1,11 +1,9 @@
 import { useMemo } from "react";
 import { RigidBody, CylinderCollider } from "@react-three/rapier";
 import { groundHeight } from "../terrain/heightfield.js";
-import { MARKERS, HOUSES, TO_CAMERA } from "../sections.js";
+import { MARKERS, HOUSES, TO_CAMERA, ISLANDS } from "../sections.js";
 
-const TREE_COUNT = 26;
-const ROCK_COUNT = 10;
-const SPAWN_CLEARANCE = 3; // keep the centre (spawn point) clear
+const SPAWN_CLEARANCE = 3; // keep the world-origin spawn + campfire area clear
 const MARKER_CLEARANCE = 2.5; // keep section markers clear
 const HOUSE_CLEARANCE = 3.2; // keep cabins clear
 // Keep a clear sightline from every sign toward the fixed camera: no scatter
@@ -13,18 +11,26 @@ const HOUSE_CLEARANCE = 3.2; // keep cabins clear
 const SIGHTLINE_HALF_WIDTH = 1.9;
 const SIGHTLINE_LENGTH = 9;
 
-// Deterministic scatter: same trees in the same spots every reload.
-function scatter(count, seed, minRadius, maxRadius) {
+// How many of each prop lands on each island.
+const TREE_COUNTS = { index: 5, contact: 5, work: 9, projects: 9 };
+const ROCK_COUNTS = { index: 2, contact: 2, work: 3, projects: 3 };
+
+// Deterministic scatter across one island's disc: polar around its centre,
+// same props in the same spots every reload. Coords are absolute world units,
+// so the marker / house / sightline rejection checks work unchanged.
+function scatter(count, seed, island, innerR, outerR) {
   const rand = seededRandom(seed);
   const out = [];
   let guard = 0;
   while (out.length < count && guard++ < count * 40) {
     const angle = rand() * Math.PI * 2;
-    const r = minRadius + rand() * (maxRadius - minRadius);
-    const x = Math.cos(angle) * r;
-    const z = Math.sin(angle) * r;
+    const r = innerR + rand() * (outerR - innerR);
+    const x = Math.cos(angle) * r + island.center[0];
+    const z = Math.sin(angle) * r + island.center[1];
 
-    if (Math.hypot(x, z) < SPAWN_CLEARANCE) continue;
+    // Keep the spawn + campfire area at the world origin clear.
+    if (island.id === "index" && Math.hypot(x, z) < SPAWN_CLEARANCE) continue;
+
     const onMarker = MARKERS.some(
       (m) =>
         Math.hypot(x - m.position[0], z - m.position[2]) < MARKER_CLEARANCE,
@@ -102,8 +108,32 @@ function Rock({ x, z, rot, scale }) {
 }
 
 export default function Props() {
-  const trees = useMemo(() => scatter(TREE_COUNT, 1337, 4, 18), []);
-  const rocks = useMemo(() => scatter(ROCK_COUNT, 4242, 3, 17), []);
+  const trees = useMemo(
+    () =>
+      ISLANDS.flatMap((isl, i) =>
+        scatter(
+          TREE_COUNTS[isl.id] ?? 0,
+          1337 + i * 17,
+          isl,
+          isl.radius * 0.15,
+          isl.radius - 0.9,
+        ),
+      ),
+    [],
+  );
+  const rocks = useMemo(
+    () =>
+      ISLANDS.flatMap((isl, i) =>
+        scatter(
+          ROCK_COUNTS[isl.id] ?? 0,
+          4242 + i * 17,
+          isl,
+          isl.radius * 0.15,
+          isl.radius - 0.9,
+        ),
+      ),
+    [],
+  );
 
   return (
     <>

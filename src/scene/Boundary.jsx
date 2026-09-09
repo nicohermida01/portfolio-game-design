@@ -1,9 +1,10 @@
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
-import { GROUND_SIZE } from "../terrain/heightfield.js";
 
-const HALF = GROUND_SIZE / 2 - 0.5;
+// Wide invisible box around the whole archipelago — a last-resort backstop so
+// the player can't wander infinitely over open water. Falling in the sea is
+// handled by the water-fall respawn in Player.jsx.
+const HALF = 30;
 
-// Four invisible static walls so the player can't walk off the terrain.
 export default function Boundary() {
   return (
     <RigidBody type="fixed" colliders={false}>

@@ -35,38 +35,54 @@ export const ZONES = [
     title: "Work",
     // Centre + radius in world units (x, z). Terrain within `radius` of
     // `center` is tinted `color`; crossing in raises the region banner.
-    center: [-10, -4],
-    radius: 7,
+    center: [-14, -7],
+    radius: 6,
     color: "#3f7d8c",
     // Two cabins, read as a little hamlet — clustered on the back (−X/−Z) edge
     // of the zone so they never occlude the markers.
     houses: [
-      [-13.5, 0, -5.5],
-      [-11, 0, -8],
+      [-17.5, 0, -8.5],
+      [-15, 0, -11],
     ],
     // Markers live in the front (+X/+Z) half of the zone, nearer the camera.
     markers: [
-      { id: "autoinspector", position: [-8, 0, -2] },
-      { id: "cepa", position: [-12, 0, -1] },
-      { id: "academia-perrupato", position: [-7, 0, -5] },
+      { id: "autoinspector", position: [-12, 0, -5] },
+      { id: "cepa", position: [-16, 0, -4] },
+      { id: "academia-perrupato", position: [-11, 0, -8] },
     ],
   },
   {
     id: "projects",
     title: "Projects",
-    center: [10, -3],
-    radius: 7,
+    center: [14, -6],
+    radius: 6,
     color: "#8c6f3f",
     houses: [
-      [6.5, 0, -4.5],
-      [8.5, 0, -7],
+      [10.5, 0, -7.5],
+      [12.5, 0, -10],
     ],
     markers: [
-      { id: "necto", position: [13, 0, -2] },
-      { id: "estudio-nodo", position: [8, 0, 0] },
-      { id: "bit-by-bit", position: [11.5, 0, 1] },
+      { id: "necto", position: [17, 0, -5] },
+      { id: "estudio-nodo", position: [12, 0, -3] },
+      { id: "bit-by-bit", position: [15.5, 0, -2] },
     ],
   },
+];
+
+// Each portfolio location is its own island. Points get a small disc; zones
+// reuse their tint radius. `index` is the hub the player spawns on.
+export const ISLANDS = [
+  { id: "index",    center: [0, -3],          radius: 5,   kind: "hub" },
+  { id: "contact",  center: [0, 12],          radius: 4.5, kind: "point" },
+  { id: "work",     center: ZONES[0].center,  radius: ZONES[0].radius, kind: "zone", color: ZONES[0].color },
+  { id: "projects", center: ZONES[1].center,  radius: ZONES[1].radius, kind: "zone", color: ZONES[1].color },
+];
+
+// Walkable graph. `index` is the hub; every other island hangs off it.
+export const BRIDGES = [
+  { from: "index", to: "work" },
+  { from: "index", to: "projects" },
+  { from: "index", to: "contact" },
 ];
 
 // Flat list of every marker on the map, each carrying the zone tint it renders

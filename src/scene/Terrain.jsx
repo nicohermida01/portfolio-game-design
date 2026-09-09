@@ -1,22 +1,26 @@
 import { useMemo } from "react";
 import { RigidBody } from "@react-three/rapier";
-import { createTerrainGeometry } from "../terrain/heightfield.js";
-import { ZONES } from "../sections.js";
+import { createIslandGeometry } from "../terrain/heightfield.js";
+import { ISLANDS, ZONES } from "../sections.js";
 
 export default function Terrain() {
-  // Build the geometry once, not on every render. ZONES bake their colour patch
+  // One displaced disc per island, built once. ZONES bake their colour patch
   // into the vertex-colour attribute.
-  const geometry = useMemo(() => createTerrainGeometry(ZONES), []);
-
+  const islands = useMemo(
+    () => ISLANDS.map((isl) => ({ id: isl.id, geometry: createIslandGeometry(isl, ZONES) })),
+    [],
+  );
   return (
-    // A static body. "trimesh" auto-builds a collider that matches the
-    // displaced surface, so the player and props rest on the real relief.
-    <RigidBody type="fixed" colliders="trimesh" friction={1}>
-      <mesh geometry={geometry} receiveShadow castShadow>
-        {/* vertexColors carries both the grass and the zone tints; flatShading
-            keeps the faceted low-poly look. */}
-        <meshStandardMaterial vertexColors flatShading roughness={1} />
-      </mesh>
-    </RigidBody>
+    <>
+      {islands.map(({ id, geometry }) => (
+        // One static trimesh body per island — disjoint, so no need for a
+        // single global collider.
+        <RigidBody key={id} type="fixed" colliders="trimesh" friction={1}>
+          <mesh geometry={geometry} receiveShadow castShadow>
+            <meshStandardMaterial vertexColors flatShading roughness={1} />
+          </mesh>
+        </RigidBody>
+      ))}
+    </>
   );
 }

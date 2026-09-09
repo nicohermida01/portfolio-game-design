@@ -4,6 +4,7 @@ import { useKeyboardControls } from "@react-three/drei";
 import { RigidBody, CapsuleCollider } from "@react-three/rapier";
 import * as THREE from "three";
 import { MARKERS, ZONES, ACTIVATION_RADIUS } from "../sections.js";
+import { WATER_LEVEL } from "../terrain/heightfield.js";
 import { CHARACTER } from "../character.js";
 import { useGameStore } from "../store.js";
 import Character from "./Character.jsx";
@@ -79,6 +80,13 @@ export default function Player() {
 
     // 4. Physics owns the position — read it back for camera + proximity.
     const pos = body.translation();
+
+    // Fell in the water: teleport back to the index island and kill velocity.
+    if (pos.y < WATER_LEVEL - 2.5) {
+      body.setTranslation({ x: 0, y: 2, z: 0 }, true);
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      return;
+    }
 
     cameraTarget.set(pos.x, pos.y, pos.z).add(CAMERA_OFFSET);
     state.camera.position.lerp(cameraTarget, 1 - Math.pow(0.001, delta));
