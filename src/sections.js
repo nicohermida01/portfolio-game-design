@@ -24,9 +24,10 @@ export const TO_CAMERA = [Math.SQRT1_2, Math.SQRT1_2];
 
 export const POINTS = [
   // `house` sits on the far side (−X/−Z) of the marker so it never stands
-  // between the sign and the camera.
-  { id: "index", label: "Index", position: [0, 0, -3], house: [-3, 0, -5.5] },
-  { id: "contact", label: "Contact", position: [0, 0, 12], house: [-3, 0, 10] },
+  // between the sign and the camera. Pulled in off the island rim (the terrain
+  // now has a rocky edge) while keeping the same bearing.
+  { id: "index", label: "Index", position: [0, 0, -3], house: [-2, 0, -4.66] },
+  { id: "contact", label: "Contact", position: [0, 0, 12], house: [-1.87, 0, 10.75] },
 ];
 
 export const ZONES = [
@@ -101,6 +102,19 @@ export const BRIDGE_FEET = BRIDGES.flatMap(({ from, to }) => {
     [b.center[0] - ux * b.radius * 0.9, b.center[1] - uz * b.radius * 0.9],
   ];
 });
+
+// Per-island list of bridge landing angles (radians, measured from the island
+// centre on the XZ plane). `heightfield.js` uses these to flatten the coastline
+// into a smooth grass ramp at each bridge mouth — no rocky steps, no wobble —
+// so every bridge foot meets graded land.
+export const BRIDGE_AXES = Object.fromEntries(ISLANDS.map((i) => [i.id, []]));
+for (const { from, to } of BRIDGES) {
+  const a = ISLANDS.find((i) => i.id === from);
+  const b = ISLANDS.find((i) => i.id === to);
+  const ab = Math.atan2(b.center[1] - a.center[1], b.center[0] - a.center[0]);
+  BRIDGE_AXES[from].push(ab);
+  BRIDGE_AXES[to].push(ab + Math.PI);
+}
 
 // Flat list of every marker on the map, each carrying the zone tint it renders
 // in (null for standalone points). Player proximity + Experience iterate this.

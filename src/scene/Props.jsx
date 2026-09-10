@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Instances, Instance } from "@react-three/drei";
 import { RigidBody, CylinderCollider, BallCollider } from "@react-three/rapier";
-import { groundHeight } from "../terrain/heightfield.js";
+import { groundHeight, WATER_LEVEL } from "../terrain/heightfield.js";
 import { MARKERS, HOUSES, TO_CAMERA, ISLANDS, BRIDGE_FEET } from "../sections.js";
 
 const SPAWN_CLEARANCE = 3; // keep the world-origin spawn + campfire area clear
@@ -30,6 +30,9 @@ function scatter(count, seed, island, innerR, outerR) {
     const r = innerR + rand() * (outerR - innerR);
     const x = Math.cos(angle) * r + island.center[0];
     const z = Math.sin(angle) * r + island.center[1];
+
+    // Drop anything the irregular coastline left over water or on a rock step.
+    if (groundHeight(x, z) < WATER_LEVEL - 0.15) continue;
 
     // Keep the spawn + campfire area at the world origin clear.
     if (island.id === "index" && Math.hypot(x, z) < SPAWN_CLEARANCE) continue;
@@ -82,7 +85,8 @@ function buildScatter(counts, seedBase) {
       seedBase + i * 17,
       isl,
       isl.radius * 0.15,
-      isl.radius - 0.9,
+      // Keep clear of the rocky rim (RIM_START ~0.78 of the radius).
+      isl.radius * 0.72,
     ),
   );
 }

@@ -1,6 +1,6 @@
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { ISLANDS } from "../sections.js";
-import { WATER_LEVEL } from "../terrain/heightfield.js";
+import { BRIDGE_DECK_Y } from "../terrain/heightfield.js";
 
 // Procedural wooden plank footbridge between two island shores. Local +x runs
 // along the span; the deck is flat, seated just above the waterline (mid-span
@@ -10,7 +10,8 @@ import { WATER_LEVEL } from "../terrain/heightfield.js";
 const PLANK_W = 0.26; // span-wise size of one deck plank
 const PLANK_GAP = 0.05; // tight gap so the deck reads as a walkway, not track
 const DECK_HALF_Z = 0.85; // half-width of the walkway
-const DECK_Y = WATER_LEVEL + 0.55; // clear of the water plane, ~flush with the bank
+const DECK_Y = BRIDGE_DECK_Y; // clear of the water plane; the heightfield ramps
+// each island's bridge mouth up to meet this, so the foot sits ~flush
 const RAIL_Y = 0.52; // handrail height above the deck
 const POST_SPACING = 1.5; // target gap between rail posts
 

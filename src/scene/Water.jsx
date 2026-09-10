@@ -11,7 +11,7 @@ import { WATER_LEVEL } from "../terrain/heightfield.js";
 // meet the fog as a horizon.
 const SIZE = 220;
 const SEG = 34;
-const AMPL = 0.32; // small throw so crests never poke through the island banks
+const AMPL = 0.24; // small throw so crests never poke through the rocky rim
 
 const TROUGH = new THREE.Color("#0c2233");
 const CREST = new THREE.Color("#26647e");

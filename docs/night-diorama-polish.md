@@ -269,6 +269,42 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
 Fresh look at the running build (night archipelago) against the code. Round 2
 is closed; only audio was left. Same status flags.
 
+## Foundational — terrain rework (do before the rest of Round 3)
+
+- [x] **Islands are ugly: perfect circles with a dome growing to the centre.**
+  `heightfield.js` `groundHeight` was `lerp(0.7, -0.6, smoothstep(r))` — a smooth
+  cone — over a perfectly circular `polarDisc`.
+  → Chosen look (user): **flat grass mesa + irregular faceted coastline +
+  rocky stepped edge.** Rewrote the profile:
+  · `PLATEAU 0.35` held flat (gentle `TOP_NOISE_AMP 0.09` only) out to
+    `RIM_START 0.78`, then a 2-step `terrace()` (flat tread + sloped riser per
+    level) down to `SHORE_BOTTOM -1.6`, well under the waterline.
+  · `effR = dist / (radius · (1 + coastWobble(angle) · 0.13))` — periodic-in-
+    angle 2-octave noise sampled around a circle, unique per island → the coast
+    lobes in and out instead of being a circle. Mesh `polarDisc` grown to
+    `radius · 1.32` to cover the widest lobe; the overhang is submerged skirt.
+  · `bridgeInfluence(islandId, angle)` (new `BRIDGE_AXES` export in
+    `sections.js`): at each bridge mouth the rim becomes a smooth grass ramp
+    that meets `BRIDGE_DECK_Y` (all six feet land at `-0.32`, deck `-0.35`),
+    the coast wobble is cancelled, and the ramp fades out past the foot so the
+    shore still drops under water.
+  · `flatInfluence(x, z)`: STRONG pad (spawn + cabins, `2.2/3.6`u) and LIGHT pad
+    (signposts, `1.3/2.2`u) lift the terrain back to the plateau near placed
+    objects — the mesh bulges a flat grass spur around each — so nothing is
+    stranded on the rim. Verified numerically: every cabin footprint, sign base
+    and bridge foot sits on flat ground; rocky rim still reads on 60–90% of
+    each coastline.
+  · Colours: grass on the mesa, `GRASS → ROCK/ROCK_DARK` on the steps
+    (`effR 0.82–0.92`), per-vertex jitter, suppressed at bridge mouths.
+  Knock-on: `sections.js` `BRIDGE_AXES` + `h-index`/`h-contact` nudged in off
+  the rim (same bearing); `Bridge.jsx` uses shared `BRIDGE_DECK_Y`; `Props.jsx`
+  rejects scatter over water + keeps props inside `radius · 0.72`; `Water.jsx`
+  `AMPL 0.32 → 0.24`. Build green.
+  Left to eyeball in `dev`: step steepness / count, `COAST_AMP`, rock palette,
+  whether the flat spurs around cabins read as intentional.
+  Files: `src/terrain/heightfield.js`, `src/sections.js`, `src/scene/Bridge.jsx`,
+  `src/scene/Props.jsx`, `src/scene/Water.jsx`.
+
 ## High impact — breaks the read
 
 - [x] **The two label systems fight each other.** `ZoneLabel.jsx` billboards ran
