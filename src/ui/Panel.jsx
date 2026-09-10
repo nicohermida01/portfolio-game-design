@@ -41,6 +41,15 @@ export default function Panel() {
       {c.subtitle && <p className="panel-sub">{c.subtitle}</p>}
       {c.meta && <span className="panel-meta">{c.meta}</span>}
 
+      {c.image && (
+        <img
+          className="panel-figure"
+          src={c.image}
+          alt={c.title}
+          loading="lazy"
+        />
+      )}
+
       <p>{c.body}</p>
 
       {c.stack && (

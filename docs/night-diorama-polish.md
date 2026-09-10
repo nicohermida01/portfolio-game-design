@@ -390,6 +390,15 @@ is closed; only audio was left. Same status flags.
 
 ## Low impact — nice to have
 
+- [x] **Work / project panels show no image.** Page mode renders the
+  `content.js` `image` for every project + experience entry; the 3D `Panel`
+  didn't. `resolveMarker()` now passes `image` through for the `project` /
+  `work` tags, `Panel.jsx` renders it as a `.panel-figure` (`16/9`,
+  `object-fit: cover`, lazy) between the meta and the body. All six
+  `/portfolio/*.jpg` already ship in `public/`. `index` / `contact` carry no
+  image, as before. Build green.
+  Files: `src/sections.js`, `src/ui/Panel.jsx`, `src/styles.css`.
+
 - [ ] **Vignette is heavy** (`darkness 0.7 / offset 0.3`) — shrinks the felt play
   area. Try `~0.55`.
   Files: `src/scene/Experience.jsx`.
