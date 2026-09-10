@@ -18,12 +18,22 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   ~0.75 a couple of islands away → 0 past the fog). DOM `ZoneBanner` still owns
   the punchy "Entering X" moment.
   Files: `src/scene/ZoneLabel.jsx`, `src/scene/Experience.jsx`.
-  **Update (2026-09-10):** the DOM `ZoneBanner` (top-centre "Entering X" flash on
-  zone entry) was removed by request — the `ZoneLabel` billboards over each
-  island carry the zone name already. Deleted `src/ui/ZoneBanner.jsx`, its
-  `<ZoneBanner />` in `ThreeScene.jsx`, and the `.zone-banner*` CSS. `store.js`
-  `activeZone` / `setActiveZone` and `Player.jsx`'s zone loop are left in place
-  (now unused — cheap, and handy if a zone cue comes back).
+  **Update (2026-09-10):**
+  · The DOM `ZoneBanner` (top-centre "Entering X" flash on zone entry) was
+    removed by request. Deleted `src/ui/ZoneBanner.jsx`, its `<ZoneBanner />` in
+    `ThreeScene.jsx`, and the `.zone-banner*` CSS. `store.js` `activeZone` /
+    `setActiveZone` and `Player.jsx`'s zone loop left in place (unused, cheap).
+  · The `ZoneLabel` floating text billboards were then replaced by
+    `IslandPointer.jsx` — one soft arrowhead per island (`ISLANDS.map` in
+    `Experience.jsx`) that fades in only when the island crowds / leaves the
+    frame edge (`|ndc|` past `SHOW_FROM 0.74`), rides out to `EDGE 0.9` and
+    spins to point at the island; constant-ish screen size via `dist/REF_DIST`.
+    Silent while the island is comfortably in view, so the middle of the frame
+    stays clear. The fixed on-island signposts are untouched.
+    Files: `src/scene/IslandPointer.jsx` (new), `src/scene/Experience.jsx`;
+    `src/scene/ZoneLabel.jsx` deleted.
+    Eyeball: `SHOW_FROM` (when the arrow appears), arrow size/colour, whether it
+    should also show a faint hint while the island is on-screen but far.
 
 - [x] **Everything falls off into pure black.** Bridges led to islands you
   couldn't see. Fog `22/55` → `30/92` (only the far edge fades), bg/fog color

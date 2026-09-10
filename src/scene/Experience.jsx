@@ -1,6 +1,6 @@
 import { Physics } from "@react-three/rapier";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import { MARKERS, POINTS, ZONES, BRIDGES, ISLANDS, HOUSES } from "../sections.js";
+import { MARKERS, BRIDGES, ISLANDS, HOUSES } from "../sections.js";
 import { groundHeight } from "../terrain/heightfield.js";
 
 // One soft warm fill light per island, sat over its building cluster. This
@@ -27,7 +27,7 @@ import Fireflies from "./Fireflies.jsx";
 import Water from "./Water.jsx";
 import WaterRings from "./WaterRings.jsx";
 import Backdrop from "./Backdrop.jsx";
-import ZoneLabel from "./ZoneLabel.jsx";
+import IslandPointer from "./IslandPointer.jsx";
 
 // Flip to true to see collider outlines while developing.
 const DEBUG_PHYSICS = false;
@@ -104,28 +104,17 @@ export default function Experience() {
       <Fireflies />
       <WaterRings />
 
-      {/* Mounted well clear of the tallest cabin ridge (~2.1u) so the label
-          reads as floating over the island, not pasted on a roof. */}
-      {ZONES.map((zone) => (
-        <ZoneLabel
-          key={`label-${zone.id}`}
+      {/* One off-screen arrow per island — points the way to islands that have
+          drifted off (or to) the frame edge; silent while the island is in view. */}
+      {ISLANDS.map((isl) => (
+        <IslandPointer
+          key={`ptr-${isl.id}`}
           position={[
-            zone.center[0],
-            groundHeight(zone.center[0], zone.center[1]) + 4.4,
-            zone.center[1],
+            isl.center[0],
+            groundHeight(isl.center[0], isl.center[1]) + 2.6,
+            isl.center[1],
           ]}
-          label={zone.title}
-        />
-      ))}
-      {POINTS.map((point) => (
-        <ZoneLabel
-          key={`label-${point.id}`}
-          position={[
-            point.position[0],
-            groundHeight(point.position[0], point.position[2]) + 4.1,
-            point.position[2],
-          ]}
-          label={point.label}
+          color={isl.color ?? "#cdd9ea"}
         />
       ))}
 
