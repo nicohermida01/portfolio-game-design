@@ -399,6 +399,14 @@ is closed; only audio was left. Same status flags.
 
 ## Low impact — nice to have
 
+- [x] **Content panel has no contrast — it gets lost against the water.**
+  `.panel` was `rgba(16,18,30,0.66)` + `blur(14px)`; over the dark sea the card
+  edges vanished. → `background` `rgba(13,15,24,0.94)` (near-opaque, blur down to
+  `10px`), border `0.12 → 0.16`, shadow `0 20px 60px /.4 → 0 24px 70px /.6` + a
+  faint inset top highlight. Body text `0.8 → 0.9`, `.panel-sub` `0.55 → 0.62`,
+  tag `#8a8aff → #a9a9ff`. Build green.
+  Files: `src/styles.css`.
+
 - [x] **Work / project panels show no image.** Page mode renders the
   `content.js` `image` for every project + experience entry; the 3D `Panel`
   didn't. `resolveMarker()` now passes `image` through for the `project` /
