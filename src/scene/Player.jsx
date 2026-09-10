@@ -33,6 +33,7 @@ export default function Player() {
   const bodyRef = useRef();
   const visualRef = useRef(); // the model; we yaw this, the collider stays put
   const guideRef = useRef(); // spawn arrow, shown until the first marker
+  const markerRef = useRef(); // soft ground ring, always on — "you are here"
   const [, getKeys] = useKeyboardControls();
   const setActiveMarker = useGameStore((s) => s.setActiveMarker);
   const setActiveZone = useGameStore((s) => s.setActiveZone);
@@ -149,6 +150,15 @@ export default function Player() {
       }
     }
 
+    // 5c. "You are here": the ground ring breathes slowly so the small avatar
+    //     is easy to pick out of the wide frame without shouting.
+    const mk = markerRef.current;
+    if (mk) {
+      const b = (Math.sin(state.clock.elapsedTime * 1.5) + 1) * 0.5; // 0..1
+      mk.material.opacity = 0.16 + b * 0.1;
+      mk.scale.setScalar(1 + b * 0.05);
+    }
+
     // 6. Zone: whichever zone disc the player is standing in drives the banner.
     let zone = null;
     for (const z of ZONES) {
@@ -198,6 +208,19 @@ export default function Player() {
         castShadow={false}
         position={[0.5, 0.7, 0.5]}
       />
+
+      {/* Soft "you are here" ring on the ground, travelling with the player and
+          breathing slowly — keeps the small avatar findable in the wide iso
+          frame. Cool white so it doesn't read as a point-of-interest pad. */}
+      <mesh ref={markerRef} rotation-x={-Math.PI / 2} position={[0, -0.66, 0]}>
+        <ringGeometry args={[0.5, 0.72, 40]} />
+        <meshBasicMaterial
+          color="#d6e4f6"
+          transparent
+          depthWrite={false}
+          opacity={0.2}
+        />
+      </mesh>
 
       {/* Spawn guide arrow — Player.jsx orients + fades it; hidden for good
           once you've reached your first signpost. */}

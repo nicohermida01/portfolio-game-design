@@ -462,3 +462,12 @@ is closed; only audio was left. Same status flags.
   (`y 0.04/0.05 → 0.09/0.10`) so the plateau's gentle noise doesn't bury the
   near edge. Breathing pulse + active swell unchanged. Build green.
   Files: `src/scene/PointOfInterest.jsx`.
+
+- [x] **"You are here" indicator** (user request). The avatar is small and easy
+  to lose in the wide frame. Added a soft ground ring parented to the player
+  `RigidBody` (travels for free like the follow lights): `ringGeometry
+  [0.5, 0.72]` at the feet, cool white `#d6e4f6` so it doesn't read as a POI
+  pad, `opacity` breathing `0.16–0.26` on a slow sine with a tiny scale swell.
+  Always on. Build green.
+  Tunable: opacity band (bump to `~0.24–0.38` if too faint in `dev`).
+  Files: `src/scene/Player.jsx`.
