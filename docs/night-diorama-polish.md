@@ -377,11 +377,20 @@ is closed; only audio was left. Same status flags.
   goes muddy. A touch more fill, or a rim from the moon side.
   Files: `src/scene/Experience.jsx`.
 
-- [ ] **Framing.** Standing on the hub, Work's label clips the top edge and
-  Contact's clips the left — the `13.5` pull-back is still narrower than the
-  archipelago. (The edge-clamp above mitigates the label clip; the framing
-  itself is separate.)
-  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`.
+- [~] **Framing.** Standing on the hub, Contact clipped hard at the left edge,
+  Projects at the right, and the bottom third of the frame was dead water. The
+  fixed iso follow sat at a steep `(13.5, 13.5, 13.5)` — a true 45° top-down.
+  → Lowered the pitch to ~35°: `CAMERA_OFFSET` `(15.5, 11.5, 15.5)` (`x === z`
+  still, so the 45° yaw and the movement basis are untouched; only `y` drops).
+  A lower pitch pulls the neighbouring islands closer together on screen and
+  trims the foreground water. `x/z` `13.5 → 15.5` also widens the view ~15%.
+  Matched the `<Canvas>` initial position; fog `38/104 → 42/122` so the back
+  islands don't haze at the shallower angle. Build green.
+  Iteration 1 — eyeball in `dev`: the pitch (bump `y` back toward `13` if it
+  reads too flat / loses the diorama feel), and whether all four islands now
+  sit in one frame from the hub or it needs a touch more pull-back.
+  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`,
+  `src/scene/Experience.jsx`.
 
 - [ ] **Signpost lanterns smear into one bloom blob** on the zone islands —
   `emissiveIntensity 2.4` × 3 clustered signs. Consider lighting only the

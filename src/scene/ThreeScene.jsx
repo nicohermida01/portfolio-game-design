@@ -20,7 +20,7 @@ const KEY_MAP = [
 export default function ThreeScene() {
   return (
     <KeyboardControls map={KEY_MAP}>
-      <Canvas shadows camera={{ position: [13.5, 13.5, 13.5], fov: 40 }}>
+      <Canvas shadows camera={{ position: [15.5, 11.5, 15.5], fov: 40 }}>
         {/* Rapier loads its physics engine (WASM) asynchronously. */}
         <Suspense fallback={null}>
           <Experience />
