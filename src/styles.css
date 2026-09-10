@@ -206,17 +206,52 @@ body {
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* Desktop: the icon is only for the touch action button. */
+.interact-icon {
+  display: none;
+}
+
 @media (pointer: coarse) {
+  /* On touch the prompt becomes a round action button on the right, opposite
+     the movement joystick and above the mode-switch. */
   .interact-prompt {
-    /* Bottom-centre collides with the joystick on a phone — sit it up top,
-       clear of the HUD hint (which is at top: 20px until it retires). */
-    bottom: auto;
-    top: 76px;
-    padding: 12px 20px;
-    font-size: 15px;
+    top: auto;
+    bottom: 96px;
+    left: auto;
+    right: 40px;
+    transform: none;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(13, 15, 24, 0.92);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.4),
+      0 0 0 6px rgba(255, 255, 255, 0.06);
+    animation: interact-pop 0.18s ease-out;
   }
-  .interact-key {
+  .interact-prompt:active {
+    transform: scale(0.94);
+  }
+  .interact-key,
+  .interact-label {
     display: none;
+  }
+  .interact-icon {
+    display: block;
+    width: 28px;
+    height: 28px;
+    color: #eef2f9;
+  }
+}
+
+@keyframes interact-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }
 

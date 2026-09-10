@@ -434,8 +434,10 @@ is closed; only audio was left. Same status flags.
     highlight; `interactWithNearby` toggles the panel; removed the old
     `dismissedMarkerId` dance (no auto-reopen to guard against now).
   · New `src/ui/InteractPrompt.jsx` — a bottom-centre pill "Read **X**" with an
-    `E` key cap on desktop; on `pointer: coarse` it sits top-centre, drops the
-    key cap, and is itself the tap target. Window `keydown` for `KeyE` opens it.
+    `E` key cap on desktop; on `pointer: coarse` it becomes a round action
+    button (open-book icon) on the right, above the mode-switch and opposite the
+    movement joystick — the text + key cap hide, the icon shows. Window
+    `keydown` for `KeyE` opens it on desktop.
   · `PointOfInterest.jsx` highlight now keys off `nearbyMarker` (feedback that
     you *can* interact), HUD hint reworded.
   Files: `src/store.js`, `src/scene/Player.jsx`, `src/scene/PointOfInterest.jsx`,
