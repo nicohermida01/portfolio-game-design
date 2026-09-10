@@ -106,6 +106,15 @@ body {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
   pointer-events: none;
   user-select: none;
+  transition:
+    opacity 0.7s ease 0.4s,
+    transform 0.7s ease 0.4s;
+}
+
+/* Its job is done once the player has reached their first signpost. */
+.hud.is-dismissed {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
 .hud-touch {

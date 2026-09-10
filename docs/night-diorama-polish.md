@@ -446,9 +446,14 @@ is closed; only audio was left. Same status flags.
   Files: `src/scene/Backdrop.jsx` (new), `src/scene/Experience.jsx`,
   `src/scene/Water.jsx`.
 
-- [ ] **HUD hint persists forever.** `firstMarkerSeen` is already tracked — fade
-  the "Move with WASD…" hint after the first activation.
-  Files: `src/scene/ThreeScene.jsx`, `src/store.js`, `src/styles.css`.
+- [x] **HUD hint persists forever.** → `ThreeScene.jsx` reads the reactive
+  `firstMarkerSeen` and adds `.is-dismissed` to `.hud`; `.hud` got a
+  `0.7s` opacity+transform transition (0.4s delay), `.hud.is-dismissed` fades it
+  to `opacity 0` / `translateY(8px)`. New visitor: hint lingers a beat after
+  reaching the first signpost, then fades. Returning visitor: `firstMarkerSeen`
+  is `true` from localStorage on mount, so it starts hidden (no flash, no
+  transition on first paint). Build green.
+  Files: `src/scene/ThreeScene.jsx`, `src/styles.css`.
 
 - [ ] **`PointOfInterest` pad is nearly invisible** (`opacity 0.08 / 0.16`).
   Decide: an affordance that should teach "stand here", or ambient dressing.
