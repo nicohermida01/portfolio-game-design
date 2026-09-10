@@ -26,7 +26,7 @@ export const POINTS = [
   // `house` sits on the far side (−X/−Z) of the marker so it never stands
   // between the sign and the camera. Pulled in off the island rim (the terrain
   // now has a rocky edge) while keeping the same bearing.
-  { id: "index", label: "Index", position: [0, 0, -3], house: [-2, 0, -4.66] },
+  { id: "index", label: "Home", position: [0, 0, -3], house: [-2, 0, -4.66] },
   { id: "contact", label: "Contact", position: [0, 0, 12], house: [-1.87, 0, 10.75] },
 ];
 

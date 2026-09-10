@@ -62,7 +62,7 @@ export default function PagePortfolio() {
 
         {/* ---------- HERO ---------- */}
         <section className="pp-sec pp-hero">
-          <SectionTag n="00" name="Index" />
+          <SectionTag n="00" name="Home" />
           <div className="pp-sec-body">
             <div className="pp-eyebrow pp-m">
               {profile.role}&nbsp;&nbsp;//&nbsp;&nbsp;{profile.location}
