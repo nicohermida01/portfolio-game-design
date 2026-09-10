@@ -22,22 +22,24 @@ export default function Signpost({ position, label, highlight = false }) {
   return (
     <group position={[x, y, z]} rotation-y={FACING_YAW}>
       {/* post */}
-      <mesh castShadow position={[0, 0.6, 0]}>
-        <boxGeometry args={[0.14, 1.2, 0.14]} />
+      <mesh castShadow position={[0, 0.7, 0]}>
+        <boxGeometry args={[0.14, 1.4, 0.14]} />
         <meshStandardMaterial color={POST} flatShading roughness={1} />
       </mesh>
 
       {/* diagonal brace under the board */}
-      <mesh castShadow position={[0.16, 0.82, 0]} rotation-z={-Math.PI / 4}>
-        <boxGeometry args={[0.09, 0.42, 0.09]} />
+      <mesh castShadow position={[0.18, 0.95, 0]} rotation-z={-Math.PI / 4}>
+        <boxGeometry args={[0.09, 0.48, 0.09]} />
         <meshStandardMaterial color={BRACE} flatShading roughness={1} />
       </mesh>
 
       {/* board — tilted back to face the raised camera, with the marker name
-          painted on its face so it reads from across the archipelago */}
-      <group position={[0, 1.06, 0.06]} rotation-x={BOARD_PITCH}>
+          painted on its face so it reads from across the archipelago. Sized so
+          the text lands around ~15px at iso distance (0.13 font on the old
+          smaller board came out an unreadable ~10px). */}
+      <group position={[0, 1.28, 0.06]} rotation-x={BOARD_PITCH}>
         <mesh castShadow>
-          <boxGeometry args={[1.1, 0.5, 0.08]} />
+          <boxGeometry args={[1.45, 0.66, 0.08]} />
           <meshStandardMaterial
             color={highlight ? BOARD_HI : BOARD}
             emissive={highlight ? "#3a2a12" : "#000000"}
@@ -49,14 +51,14 @@ export default function Signpost({ position, label, highlight = false }) {
         {label && (
           <Text
             position={[0, 0, 0.05]}
-            fontSize={0.13}
-            maxWidth={0.96}
+            fontSize={0.2}
+            maxWidth={1.3}
             lineHeight={1.05}
             textAlign="center"
             anchorX="center"
             anchorY="middle"
             color={highlight ? "#fff5e0" : "#f2e2c0"}
-            outlineWidth={0.006}
+            outlineWidth={0.009}
             outlineColor="#2a1809"
           >
             {label.toUpperCase()}
@@ -68,7 +70,7 @@ export default function Signpost({ position, label, highlight = false }) {
           zone, so 8 point lights just muddied the scene; the emissive + bloom
           carry the glow and the per-island fill light (Experience.jsx) does the
           ambient warmth. */}
-      <mesh castShadow position={[0.13, 1.18, 0]}>
+      <mesh castShadow position={[0.14, 1.4, 0]}>
         <boxGeometry args={[0.16, 0.22, 0.16]} />
         <meshStandardMaterial
           color="#ffcf87"

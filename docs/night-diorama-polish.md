@@ -261,3 +261,95 @@ flags as above (`[ ]` todo · `[~]` in progress · `[x]` done · `[-]` dropped).
   chasing a fancier CC0 model. Reads small and the idle pose is a bit
   crouched, but that's acceptable for a background walkable avatar.
   Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`.
+
+---
+
+# Round 3 — post-screenshot review (2026-09-09)
+
+Fresh look at the running build (night archipelago) against the code. Round 2
+is closed; only audio was left. Same status flags.
+
+## High impact — breaks the read
+
+- [x] **The two label systems fight each other.** `ZoneLabel.jsx` billboards ran
+  `depthTest:false` + `renderOrder 10`, drawing on top of everything — `INDEX`
+  punched through the Index cabin roof and read as pasted on it. At the frame
+  edge they clipped hard (`CONTACT` → `NTACT`, `WORK` cut off at the top on the
+  hub). Meanwhile `Signpost.jsx` baked the name at `fontSize 0.13` on a
+  `1.1 × 0.5` board — ~10px at iso distance, so the Work island signs were
+  unreadable noise. Index showed its name three ways at once.
+  → One hero channel per distance band:
+  · `Signpost.jsx` board `1.1×0.5` → `1.45×0.66`, font `0.13` → `0.2` (~15px at
+    iso), post/brace/lantern raised to match — the signpost now owns close range.
+  · `ZoneLabel.jsx` `NEAR_OP` `0.42` → `0.0` (`NEAR` 12→10, `CLEAR` 26→22): on
+    the island you're standing on the billboard fades out and hands off to the
+    signpost + DOM banner, so no more triple-up.
+  · `ZoneLabel.jsx` NDC edge-clamp: an inner screen-aligned `<group>` is nudged
+    by the frustum-scaled NDC overshoot, so an off-frame island's label sticks
+    to the screen edge as a waypoint instead of clipping mid-word; a label
+    behind the camera fades to 0 rather than snapping around.
+  · `Experience.jsx` label mount `+3.7/+3.4` → `+4.4/+4.1`, clear of the cabin
+    ridge so it floats over the island.
+  Build green. Left to eyeball in `npm run dev`: the exact NEAR/CLEAR handoff
+  distances and the `EDGE 0.86` margin.
+  Files: `src/scene/Signpost.jsx`, `src/scene/ZoneLabel.jsx`,
+  `src/scene/Experience.jsx`.
+
+- [ ] **Campfire crossed logs read as a green/grey splat.** `Campfire.jsx` — four
+  full-length (`1.3u`) hex cylinders crossing at `PI/4`, flat at `y=0.12`. That's
+  an 8-spoke asterisk wider than the flame; the dark brown (`#4a2f1d`) under the
+  cool ambient + hemisphere at the iso angle desaturates to a muddy green. The
+  fire also has no base — it sits straight on the grass.
+  → Tight tepee (logs leaning in, tops near the flame) or a short square stack,
+  3–4 logs inside the fire footprint, plus a stone ring / ash bed / scorch decal
+  so it's seated.
+  Files: `src/scene/Campfire.jsx`.
+
+- [ ] **The character is the weakest object on screen.** Small, dark, crouched
+  idle pose. Verify `CHARACTER.clips.idle` resolves (`Character.jsx` logs the
+  clip names + a warning if not) — the crouch may be an unplayed idle / bind
+  pose. Then consider `+15%` scale, a stronger follow light, or a cheap rim
+  light so it separates from the background.
+  Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`, `src/character.js`.
+
+## Medium impact — scene / world
+
+- [ ] **Water rings still read as contour lines / sonar.** `WaterRings.jsx` draws
+  two crisp thin `ringGeometry` bands (`0.98–1.0`) per island. Want a wide band
+  with feathered alpha (or a radial-gradient texture), fewer / slower, maybe
+  tinted per island.
+  Files: `src/scene/WaterRings.jsx`.
+
+- [ ] **Far islands crush to near-black on the shadow side.** Back-fill
+  directional is only `intensity 0.16` (`Experience.jsx`); Projects' far half
+  goes muddy. A touch more fill, or a rim from the moon side.
+  Files: `src/scene/Experience.jsx`.
+
+- [ ] **Framing.** Standing on the hub, Work's label clips the top edge and
+  Contact's clips the left — the `13.5` pull-back is still narrower than the
+  archipelago. (The edge-clamp above mitigates the label clip; the framing
+  itself is separate.)
+  Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`.
+
+- [ ] **Signpost lanterns smear into one bloom blob** on the zone islands —
+  `emissiveIntensity 2.4` × 3 clustered signs. Consider lighting only the
+  active sign.
+  Files: `src/scene/Signpost.jsx`.
+
+## Low impact — nice to have
+
+- [ ] **Vignette is heavy** (`darkness 0.7 / offset 0.3`) — shrinks the felt play
+  area. Try `~0.55`.
+  Files: `src/scene/Experience.jsx`.
+
+- [ ] **No horizon line** — the sea just fogs into the sky colour. A faint
+  gradient band at the fog distance would give the world an edge.
+  Files: `src/scene/Water.jsx`, `src/scene/Experience.jsx`.
+
+- [ ] **HUD hint persists forever.** `firstMarkerSeen` is already tracked — fade
+  the "Move with WASD…" hint after the first activation.
+  Files: `src/scene/ThreeScene.jsx`, `src/store.js`, `src/styles.css`.
+
+- [ ] **`PointOfInterest` pad is nearly invisible** (`opacity 0.08 / 0.16`).
+  Decide: an affordance that should teach "stand here", or ambient dressing.
+  Files: `src/scene/PointOfInterest.jsx`.

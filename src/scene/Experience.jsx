@@ -96,12 +96,14 @@ export default function Experience() {
       <Fireflies />
       <WaterRings />
 
+      {/* Mounted well clear of the tallest cabin ridge (~2.1u) so the label
+          reads as floating over the island, not pasted on a roof. */}
       {ZONES.map((zone) => (
         <ZoneLabel
           key={`label-${zone.id}`}
           position={[
             zone.center[0],
-            groundHeight(zone.center[0], zone.center[1]) + 3.7,
+            groundHeight(zone.center[0], zone.center[1]) + 4.4,
             zone.center[1],
           ]}
           label={zone.title}
@@ -112,7 +114,7 @@ export default function Experience() {
           key={`label-${point.id}`}
           position={[
             point.position[0],
-            groundHeight(point.position[0], point.position[2]) + 3.4,
+            groundHeight(point.position[0], point.position[2]) + 4.1,
             point.position[2],
           ]}
           label={point.label}
