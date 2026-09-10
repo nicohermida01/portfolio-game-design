@@ -453,6 +453,14 @@ is closed; only audio was left. Same status flags.
   faint inset top highlight. Body text `0.8 → 0.9`, `.panel-sub` `0.55 → 0.62`,
   tag `#8a8aff → #a9a9ff`. Build green.
   Files: `src/styles.css`.
+  **Update:** now that opening is intentional (press E / tap), the panel became
+  a **centred modal** instead of the small top-right card — bigger reads much
+  better and it no longer needs to keep out of the way. `Panel.jsx` wraps the
+  `<aside>` in a `.panel-overlay` (fixed, dim + `blur(3px)`, click-outside
+  closes, `role="dialog"` / `aria-modal`); `.panel` → `width min(660px,100%)`,
+  `max-height min(86dvh,780px)`, `h2` 20 → 26px, body 14 → 15px, bigger figure
+  and close button. Same on mobile (near-full-width modal). Esc / × unchanged.
+  Files: `src/ui/Panel.jsx`, `src/styles.css`.
 
 - [x] **Work / project panels show no image.** Page mode renders the
   `content.js` `image` for every project + experience entry; the 3D `Panel`

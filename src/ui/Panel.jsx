@@ -24,64 +24,72 @@ export default function Panel() {
   const c = resolveMarker(marker.id);
 
   return (
-    <aside className="panel">
-      <button
-        type="button"
-        className="panel-close"
-        onClick={dismiss}
-        aria-label="Close section"
-        title="Close (Esc)"
+    <div className="panel-overlay" onClick={dismiss}>
+      <aside
+        className="panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label={c.title}
+        onClick={(e) => e.stopPropagation()}
       >
-        ×
-      </button>
-
-      <span className="tag">{c.tag}</span>
-      <h2>{c.title}</h2>
-
-      {c.subtitle && <p className="panel-sub">{c.subtitle}</p>}
-      {c.meta && <span className="panel-meta">{c.meta}</span>}
-
-      {c.image && (
-        <img
-          className="panel-figure"
-          src={c.image}
-          alt={c.title}
-          loading="lazy"
-        />
-      )}
-
-      <p>{c.body}</p>
-
-      {c.stack && (
-        <ul className="panel-stack">
-          {c.stack.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      )}
-
-      {c.links && (
-        <ul className="panel-links">
-          {c.links.map((link) => (
-            <li key={link.label}>
-              <a href={link.href} target="_blank" rel="noreferrer">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {c.href && (
-        <a
-          className="panel-link"
-          href={c.href}
-          target="_blank"
-          rel="noreferrer"
+        <button
+          type="button"
+          className="panel-close"
+          onClick={dismiss}
+          aria-label="Close section"
+          title="Close (Esc)"
         >
-          {c.hrefLabel} ↗
-        </a>
-      )}
-    </aside>
+          ×
+        </button>
+
+        <span className="tag">{c.tag}</span>
+        <h2>{c.title}</h2>
+
+        {c.subtitle && <p className="panel-sub">{c.subtitle}</p>}
+        {c.meta && <span className="panel-meta">{c.meta}</span>}
+
+        {c.image && (
+          <img
+            className="panel-figure"
+            src={c.image}
+            alt={c.title}
+            loading="lazy"
+          />
+        )}
+
+        <p>{c.body}</p>
+
+        {c.stack && (
+          <ul className="panel-stack">
+            {c.stack.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        )}
+
+        {c.links && (
+          <ul className="panel-links">
+            {c.links.map((link) => (
+              <li key={link.label}>
+                <a href={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {c.href && (
+          <a
+            className="panel-link"
+            href={c.href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {c.hrefLabel} ↗
+          </a>
+        )}
+      </aside>
+    </div>
   );
 }
