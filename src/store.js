@@ -26,33 +26,34 @@ export const useGameStore = create((set) => ({
   mode: "page", // "page" | "3d"
   setMode: (mode) => set((state) => (state.mode === mode ? state : { mode })),
 
-  // The marker the player is standing in, or null on open ground.
+  // The signpost within interaction range — drives the "press E" prompt and the
+  // sign's own highlight. Set every frame by Player.jsx from proximity.
+  nearbyMarker: null,
+  // The signpost whose content panel is open. Panels no longer auto-open on
+  // proximity — only interactWithNearby() opens one, so you can walk the world
+  // without dodging panels (matters most on a small screen).
   activeMarker: null,
-  // A marker the player explicitly closed (Esc / the panel's ×). Suppressed
-  // until they leave its radius, so the panel doesn't reopen next frame while
-  // they're still standing on the sign.
-  dismissedMarkerId: null,
-  setActiveMarker: (marker) =>
+  setNearbyMarker: (marker) =>
     set((state) => {
       const id = marker?.id ?? null;
-      if (id && id === state.dismissedMarkerId) {
-        return state.activeMarker ? { activeMarker: null } : state;
+      if ((state.nearbyMarker?.id ?? null) === id) return state;
+      const patch = { nearbyMarker: marker };
+      // Walked away from the sign whose panel was open — close it.
+      if (state.activeMarker && state.activeMarker.id !== id) {
+        patch.activeMarker = null;
       }
-      const patch = {};
-      if (state.dismissedMarkerId && id !== state.dismissedMarkerId) {
-        patch.dismissedMarkerId = null; // walked off it (or onto another)
-      }
-      if ((state.activeMarker?.id ?? null) !== id) {
-        patch.activeMarker = marker;
-      }
-      return Object.keys(patch).length ? patch : state;
+      return patch;
+    }),
+  // E / tap: open the nearby sign's panel, or close it if it's already open.
+  interactWithNearby: () =>
+    set((state) => {
+      if (!state.nearbyMarker) return state;
+      return state.activeMarker?.id === state.nearbyMarker.id
+        ? { activeMarker: null }
+        : { activeMarker: state.nearbyMarker };
     }),
   dismissActiveMarker: () =>
-    set((state) =>
-      state.activeMarker
-        ? { dismissedMarkerId: state.activeMarker.id, activeMarker: null }
-        : state,
-    ),
+    set((state) => (state.activeMarker ? { activeMarker: null } : state)),
 
   // The zone the player is currently inside, or null. Drives the region banner.
   activeZone: null,

@@ -8,9 +8,9 @@ import Signpost from "./Signpost.jsx";
 export default function PointOfInterest({ marker }) {
   const discRef = useRef();
   const ringRef = useRef();
-  // Subscribe to just the boolean, so this only re-renders when its own
-  // active state flips.
-  const isActive = useGameStore((s) => s.activeMarker?.id === marker.id);
+  // Highlight the sign while the player is within range (prompt showing or panel
+  // open) — subscribe to just the boolean so this only re-renders on the flip.
+  const isActive = useGameStore((s) => s.nearbyMarker?.id === marker.id);
 
   // Drop the ground pad onto the terrain surface (same height function the
   // player, props and signs use).

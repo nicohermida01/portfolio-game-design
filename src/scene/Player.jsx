@@ -35,7 +35,7 @@ export default function Player() {
   const guideRef = useRef(); // spawn arrow, shown until the first marker
   const markerRef = useRef(); // soft ground ring, always on — "you are here"
   const [, getKeys] = useKeyboardControls();
-  const setActiveMarker = useGameStore((s) => s.setActiveMarker);
+  const setNearbyMarker = useGameStore((s) => s.setNearbyMarker);
   const setActiveZone = useGameStore((s) => s.setActiveZone);
   const setMoving = useGameStore((s) => s.setMoving);
 
@@ -98,7 +98,9 @@ export default function Player() {
     state.camera.position.lerp(cameraTarget, 1 - Math.pow(0.001, delta));
     state.camera.lookAt(pos.x, pos.y, pos.z);
 
-    // 5. Proximity: nearest marker within the radius opens its panel, else null.
+    // 5. Proximity: nearest marker within the radius becomes the "nearby" sign
+    //    (raises the interact prompt). Pressing E opens its panel — walking up
+    //    no longer opens anything on its own.
     let nearest = null;
     let nearestDist = ACTIVATION_RADIUS;
     for (const marker of MARKERS) {
@@ -110,7 +112,7 @@ export default function Player() {
         nearestDist = dist;
       }
     }
-    setActiveMarker(nearest);
+    setNearbyMarker(nearest);
 
     // 5b. Spawn guide: a small arrow over the player pointing at the nearest
     //     signpost, until they reach their first one — then it's gone for good.
