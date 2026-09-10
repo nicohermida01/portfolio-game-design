@@ -337,48 +337,6 @@ body {
   }
 }
 
-/* ======================================================================
-   3D mode — zone banner (region name, Cube World style)
-   ====================================================================== */
-.zone-banner {
-  position: absolute;
-  top: 48px;
-  left: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 0 24px;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
-  opacity: 0;
-  transform: translateX(-50%) translateY(-8px);
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-}
-
-.zone-banner.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.zone-banner-kicker {
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(30, 40, 32, 0.55);
-}
-
-.zone-banner-title {
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: rgba(20, 28, 22, 0.92);
-  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.6);
-}
-
 .joystick {
   display: none;
   position: absolute;

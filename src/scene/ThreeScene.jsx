@@ -3,7 +3,6 @@ import { Canvas } from "@react-three/fiber";
 import { KeyboardControls } from "@react-three/drei";
 import Experience from "./Experience.jsx";
 import Panel from "../ui/Panel.jsx";
-import ZoneBanner from "../ui/ZoneBanner.jsx";
 import Joystick from "../ui/Joystick.jsx";
 import Intro from "../ui/Intro.jsx";
 import { useGameStore } from "../store.js";
@@ -33,7 +32,6 @@ export default function ThreeScene() {
       </Canvas>
 
       <Panel />
-      <ZoneBanner />
       <Intro />
       <div className={`hud${seenFirstMarker ? " is-dismissed" : ""}`}>
         <span className="hud-keys">

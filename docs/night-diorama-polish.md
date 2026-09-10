@@ -18,6 +18,12 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   ~0.75 a couple of islands away → 0 past the fog). DOM `ZoneBanner` still owns
   the punchy "Entering X" moment.
   Files: `src/scene/ZoneLabel.jsx`, `src/scene/Experience.jsx`.
+  **Update (2026-09-10):** the DOM `ZoneBanner` (top-centre "Entering X" flash on
+  zone entry) was removed by request — the `ZoneLabel` billboards over each
+  island carry the zone name already. Deleted `src/ui/ZoneBanner.jsx`, its
+  `<ZoneBanner />` in `ThreeScene.jsx`, and the `.zone-banner*` CSS. `store.js`
+  `activeZone` / `setActiveZone` and `Player.jsx`'s zone loop are left in place
+  (now unused — cheap, and handy if a zone cue comes back).
 
 - [x] **Everything falls off into pure black.** Bridges led to islands you
   couldn't see. Fog `22/55` → `30/92` (only the far edge fades), bg/fog color
