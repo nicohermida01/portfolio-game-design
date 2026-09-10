@@ -60,9 +60,12 @@ export default function Experience() {
         shadow-bias={-0.0004}
         shadow-normalBias={0.04}
       />
-      <hemisphereLight args={["#2a3a58", "#0a0f16", 0.5]} />
-      {/* Dim back-fill so the shadow side of far islands never goes pure black. */}
-      <directionalLight position={[-9, 6, -11]} intensity={0.16} color="#3a4a6a" />
+      {/* Ground half lifted off near-black so upward faces on the shadow side
+          get a little sky/bounce instead of crushing to mud. */}
+      <hemisphereLight args={["#2a3a58", "#121a26", 0.6]} />
+      {/* Back-fill from the camera/shadow side — this is what keeps the far
+          islands' shadowed faces readable rather than muddy. */}
+      <directionalLight position={[-9, 6, -11]} intensity={0.42} color="#4a5a72" />
 
       {/* Warm fill over each island's cabins (see ISLAND_FILLS above). */}
       {ISLAND_FILLS.map((f) => (

@@ -372,9 +372,14 @@ is closed; only audio was left. Same status flags.
   wider. Build green.
   Files: `src/scene/WaterRings.jsx`.
 
-- [ ] **Far islands crush to near-black on the shadow side.** Back-fill
-  directional is only `intensity 0.16` (`Experience.jsx`); Projects' far half
-  goes muddy. A touch more fill, or a rim from the moon side.
+- [x] **Far islands crush to near-black on the shadow side.** The moon
+  directional comes from `+x/+z`, so each island's camera-facing side is the
+  shadow side, lit only by ambient + a near-nothing `0.16` back-fill → muddy
+  (Projects' near half). → Back-fill directional `0.16 → 0.42`, colour
+  `#3a4a6a → #4a5a72` (a step lighter, still cool), aimed from the camera /
+  shadow side as before. Hemisphere `0.5 → 0.6` and its ground half
+  `#0a0f16 → #121a26` so upward faces on the shadow side pick up a little sky
+  bounce instead of crushing. Moon + ambient + bloom untouched. Build green.
   Files: `src/scene/Experience.jsx`.
 
 - [~] **Framing.** Standing on the hub, Contact clipped hard at the left edge,
