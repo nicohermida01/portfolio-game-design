@@ -310,12 +310,18 @@ is closed; only audio was left. Same status flags.
   green.
   Files: `src/scene/Campfire.jsx`.
 
-- [ ] **The character is the weakest object on screen.** Small, dark, crouched
-  idle pose. Verify `CHARACTER.clips.idle` resolves (`Character.jsx` logs the
-  clip names + a warning if not) — the crouch may be an unplayed idle / bind
-  pose. Then consider `+15%` scale, a stronger follow light, or a cheap rim
-  light so it separates from the background.
-  Files: `src/scene/Character.jsx`, `src/scene/Player.jsx`, `src/character.js`.
+- [x] **The character is the weakest object on screen.** Small, dark, crouched
+  idle pose.
+  → Scoped fix (keep the Steve asset): `character.js` `scale` `0.553` → `0.63`
+  (~1.6u, a touch over the 1.4u capsule so it has presence in the wide iso
+  frame; origin is at the feet so `yOffset` stays pinned). `Player.jsx` now
+  carries **two** follow lights instead of one — cool key `3.2` → `4`, plus a
+  new dim warm fill low in front (`#ffd9b0`, `intensity 1.8`, `distance 3.4`)
+  so the camera-facing side stops reading as a flat silhouette. Build green.
+  Left as-is: the crouched idle pose is the model's own `Idle` clip — not
+  chasing it (asset decision). If it turns out `Idle` isn't resolving,
+  `Character.jsx` logs the clip names + a warning to the console.
+  Files: `src/character.js`, `src/scene/Player.jsx`.
 
 ## Medium impact — scene / world
 

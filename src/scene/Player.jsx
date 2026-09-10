@@ -176,16 +176,26 @@ export default function Player() {
           whatever model we draw inside. */}
       <CapsuleCollider args={[0.35, 0.35]} />
 
-      {/* Soft cool key light that travels with the player, so the character
-          never sinks into black on a dark bridge or a far island. Sits between
-          the player and the fixed camera; no shadow, short reach. */}
+      {/* Two small lights travel with the player so the avatar keeps its
+          modelling on a dark bridge or a far island. Neither casts a shadow.
+          Cool key from up toward the camera... */}
       <pointLight
         color="#aac2e4"
-        intensity={3.2}
+        intensity={4}
         distance={5.5}
         decay={2}
         castShadow={false}
         position={[1.4, 2.4, 1.4]}
+      />
+      {/* ...and a dim warm fill low in front, so the side facing the camera
+          doesn't read as a flat silhouette against the night. */}
+      <pointLight
+        color="#ffd9b0"
+        intensity={1.8}
+        distance={3.4}
+        decay={2}
+        castShadow={false}
+        position={[0.5, 0.7, 0.5]}
       />
 
       {/* Spawn guide arrow — Player.jsx orients + fades it; hidden for good

@@ -17,7 +17,10 @@
 export const CHARACTER = {
   present: true,
   url: "/models/Steve.glb", // e.g. "/models/adventurer/Adventurer.gltf"
-  scale: 0.553,
+  // ~1.6u tall — a touch over the 1.4u capsule so the avatar has some presence
+  // in the wide iso frame. The model origin is at the feet, so yOffset stays
+  // pinned to the capsule base regardless of scale.
+  scale: 0.63,
   yOffset: -0.7, // capsule half-height: moves the model's feet to its base
   clips: { idle: "Idle", walk: "Walk" },
 };
