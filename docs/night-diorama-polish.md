@@ -397,9 +397,13 @@ is closed; only audio was left. Same status flags.
   Files: `src/scene/Player.jsx`, `src/scene/ThreeScene.jsx`,
   `src/scene/Experience.jsx`.
 
-- [ ] **Signpost lanterns smear into one bloom blob** on the zone islands —
-  `emissiveIntensity 2.4` × 3 clustered signs. Consider lighting only the
-  active sign.
+- [x] **Signpost lanterns smear into one bloom blob** on the zone islands —
+  `emissiveIntensity 2.4` × 3 clustered signs, all over the `0.8` bloom
+  threshold. → `emissiveIntensity` `2.4 → highlight ? 2.6 : 1.0`: an idle
+  lantern glows warm but stays under the bloom threshold, so a cluster of three
+  no longer blooms into one blob; the active sign's lantern lights up and
+  blooms, marking the one you're standing at. Cabin windows (`2.6`, spread out)
+  unchanged. Build green.
   Files: `src/scene/Signpost.jsx`.
 
 ## Low impact — nice to have

@@ -67,15 +67,17 @@ export default function Signpost({ position, label, highlight = false }) {
       </group>
 
       {/* Lantern near the post top. No real light here — signs cluster inside a
-          zone, so 8 point lights just muddied the scene; the emissive + bloom
-          carry the glow and the per-island fill light (Experience.jsx) does the
-          ambient warmth. */}
+          zone, so 8 point lights just muddied the scene; the emissive + the
+          per-island fill light (Experience.jsx) carry the warmth. It only
+          crosses the bloom threshold when this sign is the active one, so a
+          cluster of three doesn't smear into one blob — the lit lantern marks
+          the sign you're standing at. */}
       <mesh castShadow position={[0.14, 1.4, 0]}>
         <boxGeometry args={[0.16, 0.22, 0.16]} />
         <meshStandardMaterial
           color="#ffcf87"
           emissive="#ffb347"
-          emissiveIntensity={2.4}
+          emissiveIntensity={highlight ? 2.6 : 1.0}
           flatShading
           roughness={1}
         />
