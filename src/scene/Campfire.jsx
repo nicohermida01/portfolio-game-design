@@ -6,6 +6,28 @@ import { groundHeight } from "../terrain/heightfield.js";
 const EMBER_COUNT = 40;
 const EMBER_COL = new THREE.Color("#ffb347");
 
+// Hearth: a ring of stones + a leaning-log pyre, both deterministic. The old
+// base was four full-length logs crossing dead-centre — an 8-spoke asterisk
+// wider than the flame that, in dark brown under the cool night fill, read as a
+// muddy green splat. A tight cone of logs leaning inward (tops converging just
+// under the flame) reads as firewood, and the stone ring + scorch disc seat the
+// fire on the ground instead of floating it on the grass.
+const HEARTH_STONES = Array.from({ length: 8 }, (_, i) => {
+  const a = (i / 8) * Math.PI * 2 + 0.3;
+  const r = 0.5 + ((i * 37) % 10) / 100; // 0.50–0.59, stable per index
+  return {
+    position: [Math.cos(a) * r, 0.05 + ((i * 53) % 6) / 100, Math.sin(a) * r],
+    scale: 0.85 + ((i * 71) % 40) / 100,
+    rotation: [i * 1.1, i * 2.3, i * 0.7],
+  };
+});
+
+const PYRE_LOGS = Array.from({ length: 5 }, (_, i) => ({
+  angle: (i / 5) * Math.PI * 2 + 0.4,
+  lean: -0.72 - ((i * 29) % 8) / 100, // slight per-log variation
+  color: i % 2 ? "#5a3a22" : "#6b4428", // warm browns — never desaturate to green
+}));
+
 // Central campfire near spawn — the scene's key light. Everything is
 // procedural: crossed logs, two additive cones for the flame, a flickering
 // point light, and one recycled buffer of ember points.
@@ -114,17 +136,51 @@ export default function Campfire() {
 
   return (
     <group position={[0, groundY, 0]}>
-      {/* Crossed logs at the base. */}
-      {[0, 1, 2, 3].map((i) => (
+      {/* Scorched ground under the fire + a faint additive ember-bed glow, so
+          the hearth is seated instead of floating on the grass. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.02, 0]}>
+        <circleGeometry args={[0.92, 28]} />
+        <meshBasicMaterial
+          color="#160f07"
+          transparent
+          opacity={0.6}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.035, 0]}>
+        <circleGeometry args={[0.5, 24]} />
+        <meshBasicMaterial
+          color="#ff7a2e"
+          transparent
+          opacity={0.16}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Ring of hearth stones. */}
+      {HEARTH_STONES.map((s, i) => (
         <mesh
-          key={i}
+          key={`stone-${i}`}
+          position={s.position}
+          rotation={s.rotation}
+          scale={s.scale}
           castShadow
-          position={[0, 0.12, 0]}
-          rotation={[Math.PI / 2, 0, (i * Math.PI) / 4]}
+          receiveShadow
         >
-          <cylinderGeometry args={[0.09, 0.09, 1.3, 6]} />
-          <meshStandardMaterial color="#4a2f1d" flatShading roughness={1} />
+          <icosahedronGeometry args={[0.12, 0]} />
+          <meshStandardMaterial color="#7d7d86" flatShading roughness={1} />
         </mesh>
+      ))}
+
+      {/* Leaning-log pyre — a tight cone, tops converging just under the flame. */}
+      {PYRE_LOGS.map((l, i) => (
+        <group key={`log-${i}`} rotation-y={l.angle}>
+          <mesh position={[0, 0.46, 0.22]} rotation-x={l.lean} castShadow receiveShadow>
+            <cylinderGeometry args={[0.06, 0.08, 1.15, 6]} />
+            <meshStandardMaterial color={l.color} flatShading roughness={1} />
+          </mesh>
+        </group>
       ))}
 
       {/* Flame: two stacked additive cones, animated above. */}

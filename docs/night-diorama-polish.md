@@ -295,14 +295,19 @@ is closed; only audio was left. Same status flags.
   Files: `src/scene/Signpost.jsx`, `src/scene/ZoneLabel.jsx`,
   `src/scene/Experience.jsx`.
 
-- [ ] **Campfire crossed logs read as a green/grey splat.** `Campfire.jsx` — four
+- [x] **Campfire crossed logs read as a green/grey splat.** `Campfire.jsx` — four
   full-length (`1.3u`) hex cylinders crossing at `PI/4`, flat at `y=0.12`. That's
   an 8-spoke asterisk wider than the flame; the dark brown (`#4a2f1d`) under the
-  cool ambient + hemisphere at the iso angle desaturates to a muddy green. The
-  fire also has no base — it sits straight on the grass.
-  → Tight tepee (logs leaning in, tops near the flame) or a short square stack,
-  3–4 logs inside the fire footprint, plus a stone ring / ash bed / scorch decal
-  so it's seated.
+  cool ambient + hemisphere at the iso angle desaturated to a muddy green. The
+  fire also had no base — it sat straight on the grass.
+  → Replaced with `PYRE_LOGS`: 5 logs (`0.06/0.08 × 1.15`) leaning inward on a
+  `rotation-y` fan, tops converging ~`y 0.86` just under the flame — reads as
+  firewood, contained inside the flame footprint. Warm browns (`#5a3a22` /
+  `#6b4428`) that don't desaturate to green, and the inner faces catch the fire
+  light. Plus `HEARTH_STONES` (8-stone ring, `icosahedron 0.12`) and a two-disc
+  ground decal (dark scorch `#160f07` @0.6 + additive ember-bed glow `#ff7a2e`
+  @0.16) so the hearth is seated. Flame / key light / embers unchanged. Build
+  green.
   Files: `src/scene/Campfire.jsx`.
 
 - [ ] **The character is the weakest object on screen.** Small, dark, crouched
