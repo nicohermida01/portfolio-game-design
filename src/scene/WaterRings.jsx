@@ -1,21 +1,47 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 import { ISLANDS } from "../sections.js";
 import { WATER_LEVEL } from "../terrain/heightfield.js";
 
 // Gentle ripples spreading from each island's shoreline out into the water.
-// They start just clear of the island geometry (radius * 1.12) and sit on the
-// water surface, so they read as ripples on the sea — not a marker drawn on the
-// grass, which is how the earlier versions came across. Opacity eases in then
-// fades as the ring spreads, so there's no spawn pop and no radar-sweep feel.
+// They start just clear of the island geometry and sit on the water surface, so
+// they read as ripples on the sea. Earlier versions used a hard 1px
+// `ringGeometry` band, which read as a drawn contour line / sonar sweep; this
+// one feathers both edges with a shared alpha texture and spreads wider and
+// slower so it disperses instead of marching in lockstep.
 const RINGS_PER_ISLAND = 2;
-const PERIOD = 5.5; // seconds per ripple
-const START = 1.14; // × island radius — just outside the island skirt
-const GROW = 0.3; // expands to (START + GROW) × radius
-const PEAK_OPACITY = 0.24;
+const PERIOD = 7; // seconds per ripple — unhurried
+const START = 1.1; // × island radius — just outside the island skirt
+const GROW = 0.5; // expands to (START + GROW) × radius, then dissipates
+const PEAK_OPACITY = 0.17;
 const COLOR = "#4d93ac";
 
+// One shared soft-annulus alpha texture: transparent core, a feathered band
+// near the rim, transparent again at the very edge. `RingGeometry` maps UVs
+// planar (a square over the ring's bounding box), so a radial gradient drawn
+// here lands concentric on the mesh.
+function makeRingAlpha() {
+  const s = 128;
+  const c = document.createElement("canvas");
+  c.width = c.height = s;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+  g.addColorStop(0.0, "rgba(0,0,0,0)");
+  g.addColorStop(0.62, "rgba(0,0,0,0)");
+  g.addColorStop(0.82, "rgba(255,255,255,1)");
+  g.addColorStop(0.93, "rgba(255,255,255,0.5)");
+  g.addColorStop(1.0, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, s, s);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.NoColorSpace;
+  return tex;
+}
+
 export default function WaterRings() {
+  const alphaMap = useMemo(makeRingAlpha, []);
+
   const rings = useMemo(
     () =>
       ISLANDS.flatMap((island, idx) =>
@@ -24,7 +50,7 @@ export default function WaterRings() {
           center: [island.center[0], WATER_LEVEL + 0.06, island.center[1]],
           radius: island.radius,
           // Stagger within the island, and offset each island.
-          phase: (i / RINGS_PER_ISLAND) * PERIOD + idx * 1.3,
+          phase: (i / RINGS_PER_ISLAND) * PERIOD + idx * 1.7,
         })),
       ),
     [],
@@ -40,7 +66,8 @@ export default function WaterRings() {
       const p = ((((t + rings[i].phase) % PERIOD) + PERIOD) % PERIOD) / PERIOD;
       const s = rings[i].radius * (START + p * GROW);
       m.scale.set(s, s, s);
-      m.material.opacity = PEAK_OPACITY * Math.sin(p * Math.PI); // in then out
+      // Ease in, then fade a touch faster as it disperses.
+      m.material.opacity = PEAK_OPACITY * Math.pow(Math.sin(p * Math.PI), 1.5);
     }
   });
 
@@ -53,10 +80,12 @@ export default function WaterRings() {
           position={ring.center}
           rotation-x={-Math.PI / 2}
         >
-          {/* Thin unit ring — per-frame scale sets the real radius. */}
-          <ringGeometry args={[0.98, 1, 72]} />
+          {/* Wide band — the alphaMap feathers it; per-frame scale sets the
+              real radius. */}
+          <ringGeometry args={[0.4, 1, 64]} />
           <meshBasicMaterial
             color={COLOR}
+            alphaMap={alphaMap}
             transparent
             depthWrite={false}
             opacity={0}

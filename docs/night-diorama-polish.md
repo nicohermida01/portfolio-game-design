@@ -325,10 +325,15 @@ is closed; only audio was left. Same status flags.
 
 ## Medium impact — scene / world
 
-- [ ] **Water rings still read as contour lines / sonar.** `WaterRings.jsx` draws
-  two crisp thin `ringGeometry` bands (`0.98–1.0`) per island. Want a wide band
-  with feathered alpha (or a radial-gradient texture), fewer / slower, maybe
-  tinted per island.
+- [x] **Water rings still read as contour lines / sonar.** `WaterRings.jsx` drew
+  two crisp thin `ringGeometry` bands (`0.98–1.0`) per island — hard inner/outer
+  edges that read as a drawn circle.
+  → Shared radial-gradient alpha texture (`makeRingAlpha`, one `CanvasTexture`)
+  on a wide `ringGeometry [0.4, 1]` band, so both edges feather out. Slower and
+  wider so it disperses instead of marching: `PERIOD` `5.5` → `7`, `GROW` `0.3`
+  → `0.5`, `START` `1.14` → `1.1`, `PEAK_OPACITY` `0.24` → `0.17`, and the
+  fade-out eases faster (`sin(p·π) ** 1.5`). Still 2 per island, staggered
+  wider. Build green.
   Files: `src/scene/WaterRings.jsx`.
 
 - [ ] **Far islands crush to near-black on the shadow side.** Back-fill
