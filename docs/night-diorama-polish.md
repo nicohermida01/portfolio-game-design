@@ -425,8 +425,10 @@ is closed; only audio was left. Same status flags.
   image, as before. Build green.
   Files: `src/sections.js`, `src/ui/Panel.jsx`, `src/styles.css`.
 
-- [ ] **Vignette is heavy** (`darkness 0.7 / offset 0.3`) — shrinks the felt play
-  area. Try `~0.55`.
+- [x] **Vignette is heavy** (`darkness 0.7 / offset 0.3`) — the corner islands
+  (Contact, Projects) sat in the dark, shrinking the felt play area. →
+  `offset 0.3 → 0.35` (darkening starts further out) + `darkness 0.7 → 0.5`.
+  Still settles the eye on the fire, no longer crushes the edges. Build green.
   Files: `src/scene/Experience.jsx`.
 
 - [ ] **No horizon line** — the sea just fogs into the sky colour. A faint

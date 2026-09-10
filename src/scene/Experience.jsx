@@ -135,7 +135,9 @@ export default function Experience() {
           luminanceSmoothing={0.2}
           intensity={0.5}
         />
-        <Vignette offset={0.3} darkness={0.7} />
+        {/* Light touch — enough to settle the eye on the fire without
+            crushing the corner islands or shrinking the playable area. */}
+        <Vignette offset={0.35} darkness={0.5} />
       </EffectComposer>
     </>
   );
