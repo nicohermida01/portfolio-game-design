@@ -26,6 +26,7 @@ import Campfire from "./Campfire.jsx";
 import Fireflies from "./Fireflies.jsx";
 import Water from "./Water.jsx";
 import WaterRings from "./WaterRings.jsx";
+import Backdrop from "./Backdrop.jsx";
 import ZoneLabel from "./ZoneLabel.jsx";
 
 // Flip to true to see collider outlines while developing.
@@ -97,6 +98,7 @@ export default function Experience() {
       ))}
 
       {/* Night atmosphere — all outside <Physics>, pure visuals. */}
+      <Backdrop />
       <Water />
       <Campfire />
       <Fireflies />

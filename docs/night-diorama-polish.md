@@ -431,9 +431,20 @@ is closed; only audio was left. Same status flags.
   Still settles the eye on the fire, no longer crushes the edges. Build green.
   Files: `src/scene/Experience.jsx`.
 
-- [ ] **No horizon line** — the sea just fogs into the sky colour. A faint
-  gradient band at the fog distance would give the world an edge.
-  Files: `src/scene/Water.jsx`, `src/scene/Experience.jsx`.
+- [x] **No horizon line** — background colour == fog colour, so the sea faded
+  into the sky with no edge; the world read as floating in soup.
+  → New `Backdrop.jsx`: an inverted gradient sphere (`radius 260`, `fog={false}`,
+  `renderOrder -1`) that rides the camera. Vertex colours are the fog tone
+  (`#0e2136`) everywhere except a narrow brighter band (`#26476b`) just above
+  the waterline — so the fogged sea now meets a faint lighter horizon.
+  → `Water.jsx` now follows the camera on X/Z (waves sampled in world space so
+  crests stay put), so the plane's edge is always well past the fog far plane —
+  no hard sea edge from a far island (which the `42/122` fog push for the camera
+  pitch had made possible). Build green.
+  Eyeball in `dev`: the band height / width / brightness (`h - 0.03`, `/ 0.1`,
+  `HORIZON`), and that the wave grid doesn't visibly swim as you walk.
+  Files: `src/scene/Backdrop.jsx` (new), `src/scene/Experience.jsx`,
+  `src/scene/Water.jsx`.
 
 - [ ] **HUD hint persists forever.** `firstMarkerSeen` is already tracked — fade
   the "Move with WASD…" hint after the first activation.
