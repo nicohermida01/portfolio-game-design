@@ -1,24 +1,29 @@
 import { useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
-import { Billboard } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-// A soft arrow that points toward an island when that island is off-screen or
-// crowding the frame edge — "there's more that way". Replaces the floating text
-// billboards; the fixed signposts on each island carry the names. One per
-// island, rendered from Experience.jsx. When the island sits comfortably in
-// view the arrow fades to nothing, so it never clutters the middle of the frame.
-const SHOW_FROM = 0.74; // |ndc| beyond this → the arrow fades in
-const EDGE = 0.9; // how far out toward the frame edge it rides
-const REF_DIST = 24; // keeps a roughly constant on-screen size
+// A soft arrowhead that points toward an island once that island crowds or
+// leaves the frame edge — "there's more that way". Replaces the floating text
+// billboards; the fixed on-island signposts carry the names. One per island,
+// rendered from Experience.jsx. Silent while the island sits in view, so the
+// middle of the frame stays clear.
+//
+// The arrow is slaved to the camera each frame (world transform set from the
+// camera's), so it's genuinely screen-locked and always rides the edge — an
+// earlier world-anchored version skewed toward the middle for far off-axis
+// islands.
+const SHOW_FROM = 0.72; // |ndc| past this → the arrow fades in
+const EDGE = 0.88; // how close to the true frame edge it rides
+const DEPTH = 10; // how far in front of the camera it's placed
+const SIZE = 0.42; // constant on-screen scale
 
-// Arrowhead pointing along local +x, built once.
+// Arrowhead pointing along local +x, built once and shared.
 const ARROW_GEO = (() => {
   const s = new THREE.Shape();
-  s.moveTo(0.62, 0);
-  s.lineTo(-0.32, 0.44);
-  s.lineTo(-0.1, 0);
-  s.lineTo(-0.32, -0.44);
+  s.moveTo(0.55, 0);
+  s.lineTo(-0.28, 0.36);
+  s.lineTo(-0.08, 0);
+  s.lineTo(-0.28, -0.36);
   s.closePath();
   return new THREE.ShapeGeometry(s);
 })();
@@ -27,12 +32,13 @@ const world = new THREE.Vector3();
 const ndc = new THREE.Vector3();
 const camDir = new THREE.Vector3();
 const toIsland = new THREE.Vector3();
+const offset = new THREE.Vector3();
 
 export default function IslandPointer({ position, color = "#cdd9ea" }) {
-  const offsetRef = useRef(); // screen-space placement at the edge
-  const arrowRef = useRef(); // the head — spun, scaled and faded per frame
+  const groupRef = useRef();
+  const { camera } = useThree();
 
-  const mat = useMemo(
+  const material = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
         color,
@@ -44,64 +50,57 @@ export default function IslandPointer({ position, color = "#cdd9ea" }) {
     [color],
   );
 
-  useFrame((state) => {
-    const off = offsetRef.current;
-    const arr = arrowRef.current;
-    if (!off || !arr) return;
+  useFrame(() => {
+    const g = groupRef.current;
+    if (!g) return;
 
-    const cam = state.camera;
     world.set(position[0], position[1], position[2]);
-    cam.getWorldDirection(camDir);
-    toIsland.subVectors(world, cam.position);
+    camera.getWorldDirection(camDir);
+    toIsland.subVectors(world, camera.position);
     const behind = camDir.dot(toIsland) <= 0;
-    const dist = toIsland.length();
 
-    ndc.copy(world).project(cam);
+    ndc.copy(world).project(camera);
     let nx = ndc.x;
     let ny = ndc.y;
     if (behind) {
-      // Behind the camera the projection flips — treat it as hard off-screen
-      // along the (negated) direction so the arrow still makes sense.
       nx = -nx;
       ny = -ny;
-      const m = Math.hypot(nx, ny) || 1;
-      nx = (nx / m) * 2;
-      ny = (ny / m) * 2;
     }
 
-    const reach = Math.max(Math.abs(nx), Math.abs(ny));
+    const reach = behind ? 2 : Math.max(Math.abs(nx), Math.abs(ny));
     const op = THREE.MathUtils.clamp(
       (reach - SHOW_FROM) / (1 - SHOW_FROM),
       0,
       1,
     );
-    arr.material.opacity = op * 0.85;
-    arr.visible = op > 0.001;
-    if (!arr.visible) return;
+    material.opacity = op * 0.8;
+    g.visible = op > 0.001;
+    if (!g.visible) return;
 
-    // Unit screen direction toward the island, and the point on the edge box.
+    // Unit screen direction to the island → a point on the edge box.
     const m = Math.hypot(nx, ny) || 1;
     const ux = nx / m;
     const uy = ny / m;
     const toBox = EDGE / Math.max(Math.abs(ux), Math.abs(uy));
-    const tx = ux * toBox;
-    const ty = uy * toBox;
 
-    // Offset (from the island's projected point) into Billboard-local units,
-    // which are screen-aligned; NDC → world-units at this depth.
-    const halfH = dist * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2);
-    const halfW = halfH * cam.aspect;
-    off.position.set((tx - nx) * halfW, (ty - ny) * halfH, 0);
+    // Camera-local placement at fixed DEPTH, then lifted to world space by the
+    // camera's transform — no reparenting, so R3F stays happy.
+    const halfH = DEPTH * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const halfW = halfH * camera.aspect;
+    offset
+      .set(ux * toBox * halfW, uy * toBox * halfH, -DEPTH)
+      .applyQuaternion(camera.quaternion)
+      .add(camera.position);
 
-    arr.rotation.z = Math.atan2(uy, ux);
-    arr.scale.setScalar(dist / REF_DIST);
+    g.position.copy(offset);
+    g.quaternion.copy(camera.quaternion);
+    g.rotateZ(Math.atan2(uy, ux));
+    g.scale.setScalar(SIZE);
   });
 
   return (
-    <Billboard position={position}>
-      <group ref={offsetRef}>
-        <mesh ref={arrowRef} geometry={ARROW_GEO} material={mat} renderOrder={11} />
-      </group>
-    </Billboard>
+    <group ref={groupRef}>
+      <mesh geometry={ARROW_GEO} material={material} renderOrder={12} />
+    </group>
   );
 }

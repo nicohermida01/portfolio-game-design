@@ -26,14 +26,16 @@ Status flags: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` won't do / 
   · The `ZoneLabel` floating text billboards were then replaced by
     `IslandPointer.jsx` — one soft arrowhead per island (`ISLANDS.map` in
     `Experience.jsx`) that fades in only when the island crowds / leaves the
-    frame edge (`|ndc|` past `SHOW_FROM 0.74`), rides out to `EDGE 0.9` and
-    spins to point at the island; constant-ish screen size via `dist/REF_DIST`.
-    Silent while the island is comfortably in view, so the middle of the frame
-    stays clear. The fixed on-island signposts are untouched.
+    frame edge (`|ndc|` past `SHOW_FROM 0.72`), rides the `EDGE 0.88` box and
+    spins to point at the island. Silent while the island is in view, so the
+    middle of the frame stays clear. The fixed on-island signposts are untouched.
+    v1 anchored the arrow to a world `Billboard` + a local offset — that skewed
+    toward the middle for far off-axis islands (a stray arrow mid-screen). v2
+    slaves the arrow to the camera each frame (`g.position` / `g.quaternion`
+    from the camera at a fixed `DEPTH`, `SIZE 0.42` constant) so it's genuinely
+    screen-locked and always on the edge; also a touch smaller.
     Files: `src/scene/IslandPointer.jsx` (new), `src/scene/Experience.jsx`;
     `src/scene/ZoneLabel.jsx` deleted.
-    Eyeball: `SHOW_FROM` (when the arrow appears), arrow size/colour, whether it
-    should also show a faint hint while the island is on-screen but far.
 
 - [x] **Everything falls off into pure black.** Bridges led to islands you
   couldn't see. Fog `22/55` → `30/92` (only the far edge fades), bg/fog color
