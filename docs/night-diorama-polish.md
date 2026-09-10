@@ -455,6 +455,10 @@ is closed; only audio was left. Same status flags.
   transition on first paint). Build green.
   Files: `src/scene/ThreeScene.jsx`, `src/styles.css`.
 
-- [ ] **`PointOfInterest` pad is nearly invisible** (`opacity 0.08 / 0.16`).
-  Decide: an affordance that should teach "stand here", or ambient dressing.
+- [x] **`PointOfInterest` pad is nearly invisible** (`opacity 0.08 / 0.16`).
+  Decision: it's an affordance — the sign says *what*, the pad says *where to
+  stand*. Lifted the idle read without going garish: disc `0.08 → 0.13`, rim
+  `0.16 → 0.30`; active rim `0.5 → 0.58`. Also raised the pad off the grass
+  (`y 0.04/0.05 → 0.09/0.10`) so the plateau's gentle noise doesn't bury the
+  near edge. Breathing pulse + active swell unchanged. Build green.
   Files: `src/scene/PointOfInterest.jsx`.

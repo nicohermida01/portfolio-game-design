@@ -21,19 +21,19 @@ export default function PointOfInterest({ marker }) {
   // ("Index", "Contact"); zone markers fall back to the content title.
   const signLabel = marker.label ?? resolveMarker(marker.id).title;
 
-  // A calm breathing pad — filled disc + thin rim, no spin. It just pulses
-  // gently, and firms up (brighter rim, faint scale swell) once you're close
-  // enough to activate it.
+  // A calm breathing pad — filled disc + thin rim, no spin. Idle it reads as a
+  // quiet "stand here" spot (the sign says what, the pad says where); once
+  // you're close enough to activate it the rim firms up and it swells a touch.
   useFrame((state) => {
     const pulse = (Math.sin(state.clock.elapsedTime * 1.8) + 1) * 0.5; // 0..1
     if (discRef.current) {
       discRef.current.material.opacity =
-        (isActive ? 0.24 : 0.08) + pulse * (isActive ? 0.07 : 0.04);
+        (isActive ? 0.24 : 0.13) + pulse * (isActive ? 0.07 : 0.05);
     }
     if (ringRef.current) {
       ringRef.current.material.opacity = isActive
-        ? 0.5 + pulse * 0.12
-        : 0.16 + pulse * 0.05;
+        ? 0.58 + pulse * 0.12
+        : 0.3 + pulse * 0.06;
       ringRef.current.scale.setScalar(isActive ? 1 + pulse * 0.03 : 1);
     }
   });
@@ -47,9 +47,10 @@ export default function PointOfInterest({ marker }) {
       {/* The marker itself is a wooden sign. */}
       <Signpost position={marker.position} label={signLabel} highlight={isActive} />
 
-      {/* Ground pad — the "walk up here" affordance. */}
+      {/* Ground pad — the "walk up here" affordance. Sat a little proud of the
+          grass so the plateau's gentle noise doesn't bury the near edge. */}
       <group position={position}>
-        <mesh ref={discRef} rotation-x={-Math.PI / 2} position={[0, 0.04, 0]}>
+        <mesh ref={discRef} rotation-x={-Math.PI / 2} position={[0, 0.09, 0]}>
           <circleGeometry args={[1.16, 48]} />
           <meshBasicMaterial
             color={padColor}
@@ -58,7 +59,7 @@ export default function PointOfInterest({ marker }) {
             opacity={0}
           />
         </mesh>
-        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.05, 0]}>
+        <mesh ref={ringRef} rotation-x={-Math.PI / 2} position={[0, 0.1, 0]}>
           <ringGeometry args={[1.08, 1.18, 48]} />
           <meshBasicMaterial
             color={padColor}
