@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { groundHeight } from "../terrain/heightfield.js";
 import { resolveMarker } from "../sections.js";
 import { useGameStore } from "../store.js";
+import { getDict } from "../i18n/index.js";
 import Signpost from "./Signpost.jsx";
 
 export default function PointOfInterest({ marker }) {
@@ -11,15 +12,20 @@ export default function PointOfInterest({ marker }) {
   // Highlight the sign while the player is within range (prompt showing or panel
   // open) — subscribe to just the boolean so this only re-renders on the flip.
   const isActive = useGameStore((s) => s.nearbyMarker?.id === marker.id);
+  const dict = getDict(useGameStore((s) => s.locale));
 
   // Drop the ground pad onto the terrain surface (same height function the
   // player, props and signs use).
   const [x, , z] = marker.position;
   const position = useMemo(() => [x, groundHeight(x, z), z], [x, z]);
 
-  // What the sign board reads. Standalone points carry a short `label`
-  // ("Index", "Contact"); zone markers fall back to the content title.
-  const signLabel = marker.label ?? resolveMarker(marker.id).title;
+  // What the sign board reads, in the active language. Standalone points have a
+  // localized section label ("Home"/"Inicio", "Contact"/"Contacto"); zone
+  // markers fall back to the content title (project / company name).
+  const signLabel =
+    dict.sections[marker.id] ??
+    marker.label ??
+    resolveMarker(marker.id, dict).title;
 
   // A calm breathing pad — filled disc + thin rim, no spin. Idle it reads as a
   // quiet "stand here" spot (the sign says what, the pad says where); once

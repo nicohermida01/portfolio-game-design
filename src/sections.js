@@ -4,15 +4,15 @@
 //   - POINTS: a single standalone marker (index, contact).
 //   - ZONES:  a differentiated area of terrain (its own tint + a region-name
 //             banner when you enter) that scatters several markers inside it,
-//             one per real entry in content.js.
+//             one per real entry in the locale dictionaries (src/i18n).
 //
 // `position` is [x, y, z] in world space. y is ignored for placement — markers
 // are dropped onto the terrain surface via groundHeight() — so keep it 0.
 //
-// Every marker `id` matches an id in content.js so the panel can pull the real
-// content (see resolveMarker below).
+// Every marker `id` matches an id in the locale dictionaries (src/i18n) so the
+// panel can pull the real content (see resolveMarker below).
 
-import { experience, projects, profile, hero, contact } from "./content.js";
+import { getDict } from "./i18n/index.js";
 
 // The iso camera is fixed, looking in from +X / +Z. Every sign and cabin faces
 // this way so the "front" is always toward the viewer.
@@ -141,10 +141,14 @@ export const HOUSES = [
 export const ACTIVATION_RADIUS = 2.6;
 
 // --- Panel content ------------------------------------------------------------
-// Resolve a marker id to what the panel renders. Standalone points map to
-// page-level content; zone markers map to a projects[] / experience[] entry.
+// Resolve a marker id to what the panel renders, in the given locale's language.
+// Standalone points map to page-level content; zone markers map to a
+// projects[] / experience[] entry. `dict` defaults to English so callers that
+// don't care about language (or run before the store exists) still work.
 
-export function resolveMarker(id) {
+export function resolveMarker(id, dict = getDict("en")) {
+  const { profile, hero, contact, projects, experience, ui } = dict;
+
   if (id === "index") {
     return { tag: "index", title: profile.name, body: hero.body };
   }
@@ -168,7 +172,7 @@ export function resolveMarker(id) {
       body: project.description,
       stack: project.stack,
       href: project.href,
-      hrefLabel: project.hrefLabel || "Open",
+      hrefLabel: project.hrefLabel || ui.open,
     };
   }
 
@@ -182,7 +186,7 @@ export function resolveMarker(id) {
       body: job.description,
       stack: job.stack,
       href: job.companyUrl,
-      hrefLabel: "Site",
+      hrefLabel: ui.site,
     };
   }
 

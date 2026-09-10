@@ -1,20 +1,20 @@
 import { useState } from "react";
-import {
-  profile,
-  hero,
-  stats,
-  projects,
-  experience,
-  stackGroups,
-  contact,
-} from "../content.js";
+import { useGameStore } from "../store.js";
+import { getDict } from "../i18n/index.js";
+import LocaleSwitch from "./LocaleSwitch.jsx";
 import "./page.css";
 
 // The page-mode portfolio — a faithful build of the published "Index" design.
 // Desktop and mobile are the same DOM; page.css switches layout at 900px.
+// All copy comes from the active locale dictionary (src/i18n).
 export default function PagePortfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+
+  const locale = useGameStore((s) => s.locale);
+  const t = getDict(locale);
+  const { profile, hero, stats, projects, experience, stackGroups, contact } = t;
+  const { sections, ui } = t;
 
   return (
     <main className="pp">
@@ -27,24 +27,27 @@ export default function PagePortfolio() {
           </a>
           <span className="pp-brand-short pp-m">NH</span>
 
-          <nav className="pp-nav pp-m" aria-label="Sections">
-            <a href="#work">Work</a>
-            <a href="#log">Log</a>
-            <a href="#stack">Stack</a>
-            <a href="#contact">Contact</a>
+          <nav className="pp-nav pp-m" aria-label={ui.sectionsAria}>
+            <a href="#work">{sections.work}</a>
+            <a href="#log">{sections.log}</a>
+            <a href="#stack">{sections.stack}</a>
+            <a href="#contact">{sections.contact}</a>
           </nav>
 
           {profile.available && (
             <span className="pp-status pp-m">
               <i />
-              Available<span className="pp-status-rest">&nbsp;for work</span>
+              {ui.available}
+              <span className="pp-status-rest">{ui.availableRest}</span>
             </span>
           )}
+
+          <LocaleSwitch />
 
           <button
             type="button"
             className="pp-menu-btn"
-            aria-label="Open menu"
+            aria-label={ui.openMenu}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
@@ -53,16 +56,16 @@ export default function PagePortfolio() {
           </button>
         </header>
 
-        <nav className={`pp-menu pp-m${menuOpen ? " is-open" : ""}`} aria-label="Sections">
-          <a href="#work" onClick={closeMenu}>Work</a>
-          <a href="#log" onClick={closeMenu}>Log</a>
-          <a href="#stack" onClick={closeMenu}>Stack</a>
-          <a href="#contact" onClick={closeMenu}>Contact</a>
+        <nav className={`pp-menu pp-m${menuOpen ? " is-open" : ""}`} aria-label={ui.sectionsAria}>
+          <a href="#work" onClick={closeMenu}>{sections.work}</a>
+          <a href="#log" onClick={closeMenu}>{sections.log}</a>
+          <a href="#stack" onClick={closeMenu}>{sections.stack}</a>
+          <a href="#contact" onClick={closeMenu}>{sections.contact}</a>
         </nav>
 
         {/* ---------- HERO ---------- */}
         <section className="pp-sec pp-hero">
-          <SectionTag n="00" name="Home" />
+          <SectionTag n="00" name={sections.index} />
           <div className="pp-sec-body">
             <div className="pp-eyebrow pp-m">
               {profile.role}&nbsp;&nbsp;//&nbsp;&nbsp;{profile.location}
@@ -74,7 +77,7 @@ export default function PagePortfolio() {
             <p className="pp-lede">{hero.body}</p>
             <div className="pp-cta">
               <a className="pp-btn pp-btn-primary" href="#work">
-                <span>View work</span>
+                <span>{ui.viewWork}</span>
                 <IconArrowRight />
               </a>
               <a
@@ -83,7 +86,7 @@ export default function PagePortfolio() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <span>Download CV</span>
+                <span>{ui.downloadCv}</span>
                 <IconDownload />
               </a>
             </div>
@@ -102,12 +105,10 @@ export default function PagePortfolio() {
 
         {/* ---------- WORK ---------- */}
         <section className="pp-sec" id="work">
-          <SectionTag n="01" name="Work" />
+          <SectionTag n="01" name={sections.work} />
           <div className="pp-sec-body">
-            <h2 className="pp-h2">Selected projects</h2>
-            <p className="pp-sub pp-m">
-              Built end to end — product, architecture, code, deploy.
-            </p>
+            <h2 className="pp-h2">{ui.selectedProjects}</h2>
+            <p className="pp-sub pp-m">{ui.workSub}</p>
             <div className="pp-rows">
               {projects.map((p, i) => (
                 <a
@@ -118,7 +119,7 @@ export default function PagePortfolio() {
                   rel="noreferrer"
                 >
                   <span className="pp-row-num pp-m">[{num(i)}]</span>
-                  <Media src={p.image} alt={`${p.name} — screenshot`} />
+                  <Media src={p.image} alt={`${p.name} — ${ui.screenshot}`} />
                   <div className="pp-row-body">
                     <div className="pp-row-head">
                       <span className="pp-row-num-inline pp-m">[{num(i)}]</span>
@@ -144,9 +145,9 @@ export default function PagePortfolio() {
 
         {/* ---------- LOG ---------- */}
         <section className="pp-sec" id="log">
-          <SectionTag n="02" name="Log" />
+          <SectionTag n="02" name={sections.log} />
           <div className="pp-sec-body">
-            <h2 className="pp-h2">Work experience</h2>
+            <h2 className="pp-h2">{ui.workExperience}</h2>
             <div className="pp-log">
               {experience.map((x) => (
                 <article className="pp-entry" key={x.id}>
@@ -188,7 +189,7 @@ export default function PagePortfolio() {
 
         {/* ---------- STACK ---------- */}
         <section className="pp-sec" id="stack">
-          <SectionTag n="03" name="Stack" />
+          <SectionTag n="03" name={sections.stack} />
           <div className="pp-sec-body pp-stack">
             {stackGroups.map((g) => (
               <div className="pp-stack-group" key={g.title}>
@@ -201,7 +202,7 @@ export default function PagePortfolio() {
 
         {/* ---------- CONTACT ---------- */}
         <section className="pp-sec" id="contact">
-          <SectionTag n="04" name="Contact" />
+          <SectionTag n="04" name={sections.contact} />
           <div className="pp-sec-body">
             <h2 className="pp-contact-h">{contact.heading}</h2>
             <p className="pp-contact-body">{contact.body}</p>
@@ -225,7 +226,7 @@ export default function PagePortfolio() {
 
         <footer className="pp-footer">
           <span>{profile.name} — {profile.role}</span>
-          <span>La Plata, Argentina · MMXXVI</span>
+          <span>{ui.footerTagline}</span>
         </footer>
       </div>
     </main>

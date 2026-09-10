@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useGameStore } from "../store.js";
 import { resolveMarker } from "../sections.js";
+import { getDict } from "../i18n/index.js";
 
 // Signposts no longer open their panel just because you walked up — this prompt
 // appears instead, and E (desktop) or a tap (mobile) opens the content. Keeps
@@ -9,6 +10,7 @@ export default function InteractPrompt() {
   const nearby = useGameStore((s) => s.nearbyMarker);
   const openId = useGameStore((s) => s.activeMarker?.id ?? null);
   const interact = useGameStore((s) => s.interactWithNearby);
+  const dict = getDict(useGameStore((s) => s.locale));
 
   useEffect(() => {
     const onKey = (e) => {
@@ -25,18 +27,21 @@ export default function InteractPrompt() {
   // Gone once its panel is open — the panel owns its own × / Esc.
   if (!nearby || nearby.id === openId) return null;
 
-  const title = nearby.label ?? resolveMarker(nearby.id).title;
+  const title =
+    dict.sections[nearby.id] ??
+    nearby.label ??
+    resolveMarker(nearby.id, dict).title;
 
   return (
     <button
       type="button"
       className="interact-prompt"
       onClick={interact}
-      aria-label={`Read ${title}`}
+      aria-label={`${dict.ui.read} ${title}`}
     >
       <kbd className="interact-key">E</kbd>
       <span className="interact-label">
-        Read <strong>{title}</strong>
+        {dict.ui.read} <strong>{title}</strong>
       </span>
       {/* Shown only on touch, where the prompt becomes a round action button
           next to the joystick. */}

@@ -1,4 +1,9 @@
 import { create } from "zustand";
+import {
+  resolveInitialLocale,
+  persistLocale,
+  applyDocumentLocale,
+} from "./i18n/index.js";
 
 // localStorage here is a nice-to-have (remember the player has been onboarded).
 // It can throw or be unavailable (private mode, blocked storage) — never let
@@ -19,12 +24,29 @@ function writeFlag(key) {
   }
 }
 
+// Resolved once, before the store exists, so the very first render is already
+// in the right language and <html lang> matches.
+const INITIAL_LOCALE = resolveInitialLocale();
+applyDocumentLocale(INITIAL_LOCALE);
+
 // Global state that lives OUTSIDE the Three.js tree.
 export const useGameStore = create((set) => ({
   // Which experience is on screen. "page" is the default so the first load is
   // the fast, fully accessible portfolio; "3d" lazy-loads the game.
   mode: "page", // "page" | "3d"
   setMode: (mode) => set((state) => (state.mode === mode ? state : { mode })),
+
+  // Active UI language. Seeded from the browser locale (or a remembered choice);
+  // the EN/ES switch in the page topbar is the only way to change it — both
+  // modes read this, but 3D mode shows no switch.
+  locale: INITIAL_LOCALE, // "en" | "es"
+  setLocale: (locale) =>
+    set((state) => {
+      if (state.locale === locale) return state;
+      persistLocale(locale);
+      applyDocumentLocale(locale);
+      return { locale };
+    }),
 
   // The signpost within interaction range — drives the "press E" prompt and the
   // sign's own highlight. Set every frame by Player.jsx from proximity.

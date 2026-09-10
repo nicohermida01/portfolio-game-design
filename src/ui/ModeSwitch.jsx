@@ -1,4 +1,5 @@
 import { useGameStore } from "../store.js";
+import { getDict } from "../i18n/index.js";
 
 // Toggles between the page portfolio and the 3D experience.
 // Circular floating button: it shows the icon of the mode you'd switch TO
@@ -6,8 +7,9 @@ import { useGameStore } from "../store.js";
 export default function ModeSwitch() {
   const mode = useGameStore((s) => s.mode);
   const setMode = useGameStore((s) => s.setMode);
+  const ui = getDict(useGameStore((s) => s.locale)).ui;
   const target = mode === "page" ? "3d" : "page";
-  const label = target === "3d" ? "Switch to 3D game mode" : "Switch to page mode";
+  const label = target === "3d" ? ui.switchTo3d : ui.switchToPage;
 
   return (
     <button

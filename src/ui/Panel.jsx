@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 import { useGameStore } from "../store.js";
 import { resolveMarker } from "../sections.js";
+import { getDict } from "../i18n/index.js";
 
 // Pure DOM. No Three.js here. This is the content layer: crawlable,
-// selectable, styled with normal CSS. Content comes from content.js via
-// resolveMarker(), so game mode and page mode never drift apart.
+// selectable, styled with normal CSS. Content comes from the active locale
+// dictionary via resolveMarker(), so game mode and page mode never drift apart.
 export default function Panel() {
   const marker = useGameStore((s) => s.activeMarker);
   const dismiss = useGameStore((s) => s.dismissActiveMarker);
+  const dict = getDict(useGameStore((s) => s.locale));
 
   // Esc closes the panel without having to walk away from the sign.
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function Panel() {
 
   if (!marker) return null;
 
-  const c = resolveMarker(marker.id);
+  const c = resolveMarker(marker.id, dict);
 
   return (
     <div className="panel-overlay" onClick={dismiss}>
@@ -36,8 +38,8 @@ export default function Panel() {
           type="button"
           className="panel-close"
           onClick={dismiss}
-          aria-label="Close section"
-          title="Close (Esc)"
+          aria-label={dict.ui.closeSection}
+          title={dict.ui.closeEsc}
         >
           ×
         </button>

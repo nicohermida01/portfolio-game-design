@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGameStore } from "../store.js";
+import { getDict } from "../i18n/index.js";
 
 // One-line welcome the first time you enter 3D mode. Clears on first movement,
 // any key, a click, or after a few seconds — and never comes back (persisted).
@@ -15,6 +16,7 @@ function alreadyDismissed() {
 
 export default function Intro() {
   const moving = useGameStore((s) => s.moving);
+  const intro = getDict(useGameStore((s) => s.locale)).ui.intro;
   const [visible, setVisible] = useState(() => !alreadyDismissed());
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function Intro() {
 
   return (
     <div className="intro-card" role="status">
-      Walk up to a signpost to read that section — bridges link the islands.
+      {intro}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import InteractPrompt from "../ui/InteractPrompt.jsx";
 import Joystick from "../ui/Joystick.jsx";
 import Intro from "../ui/Intro.jsx";
 import { useGameStore } from "../store.js";
+import { getDict } from "../i18n/index.js";
 
 // Everything 3D lives behind this one module so App can lazy-load it. In page
 // mode, none of three / rapier / drei / the character model is downloaded.
@@ -22,6 +23,7 @@ export default function ThreeScene() {
   // The move hint retires once the player has reached their first signpost
   // (persisted, so a returning visitor never sees it).
   const seenFirstMarker = useGameStore((s) => s.firstMarkerSeen);
+  const ui = getDict(useGameStore((s) => s.locale)).ui;
 
   return (
     <KeyboardControls map={KEY_MAP}>
@@ -37,10 +39,10 @@ export default function ThreeScene() {
       <Intro />
       <div className={`hud${seenFirstMarker ? " is-dismissed" : ""}`}>
         <span className="hud-keys">
-          Move with <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>
+          {ui.hudMoveWith} <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>
         </span>
-        <span className="hud-touch">Use the joystick</span>
-        {" — walk up to a signpost to read it"}
+        <span className="hud-touch">{ui.hudUseJoystick}</span>
+        {ui.hudTail}
       </div>
       <Joystick />
     </KeyboardControls>

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { useGameStore } from "./store.js";
+import { getDict } from "./i18n/index.js";
 import PagePortfolio from "./ui/PagePortfolio.jsx";
 import ModeSwitch from "./ui/ModeSwitch.jsx";
 
@@ -9,6 +10,7 @@ const ThreeScene = lazy(() => import("./scene/ThreeScene.jsx"));
 
 export default function App() {
   const mode = useGameStore((s) => s.mode);
+  const ui = getDict(useGameStore((s) => s.locale)).ui;
 
   return (
     <>
@@ -16,7 +18,7 @@ export default function App() {
         <PagePortfolio />
       ) : (
         <Suspense
-          fallback={<div className="scene-loading">Loading 3D mode…</div>}
+          fallback={<div className="scene-loading">{ui.loading3d}</div>}
         >
           <ThreeScene />
         </Suspense>

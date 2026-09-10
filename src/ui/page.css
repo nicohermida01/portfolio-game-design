@@ -147,6 +147,32 @@
   border-top: none;
 }
 
+/* ---- language switch (page topbar only; 3D mode has none) ---- */
+.pp-locale {
+  display: inline-flex;
+  border: 1px solid #262f49;
+}
+.pp-locale-opt {
+  padding: 7px 10px;
+  border: 0;
+  background: transparent;
+  color: #8a90a2;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+.pp-locale-opt + .pp-locale-opt {
+  border-left: 1px solid #262f49;
+}
+.pp-locale-opt:hover {
+  color: #e7e9f0;
+}
+.pp-locale-opt.is-active {
+  background: #141a28;
+  color: #3effc0;
+}
+
 /* ======================= SECTION SHELL ======================= */
 .pp-sec {
   display: grid;
@@ -623,6 +649,14 @@
   }
   .pp-status-rest {
     display: none;
+  }
+  /* the availability pill drops on mobile so the brand, language switch and
+     menu button have room in the 22px-gutter header */
+  .pp-status {
+    display: none;
+  }
+  .pp-locale-opt {
+    padding: 6px 8px;
   }
   .pp-menu-btn {
     display: flex;
