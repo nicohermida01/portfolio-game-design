@@ -28,10 +28,11 @@ export default {
   hero: {
     headline: "I build web products end‑to‑end — from the API to the interface.",
     body:
-      "Software developer from La Plata, Argentina — Systems at UNLP, one year in " +
-      "production at a startup, and several projects shipped end to end. I lean " +
-      "backend and architecture: REST APIs, async messaging, hexagonal design, and " +
-      "taking a thing from the domain model all the way to deploy.",
+      "Software developer from La Plata, Argentina — Systems at UNLP, a year in " +
+      "production at a startup, ongoing freelance work shipping real products " +
+      "since, and several projects built end to end. I lean backend and " +
+      "architecture: REST APIs, async messaging, hexagonal design, and taking a " +
+      "thing from the domain model all the way to deploy.",
   },
 
   stats: [
@@ -83,6 +84,20 @@ export default {
         "no prior experience needed.",
       stack: ["Astro", "TypeScript", "TailwindCSS"],
     },
+    {
+      id: "quick-qr",
+      name: "Quick QR",
+      badge: "Personal",
+      href: "https://qr-code-generator-kappa-ruby.vercel.app/",
+      hrefLabel: "Live",
+      image: "/portfolio/quick-qr.png",
+      description:
+        "A single-page QR code generator — turn any link or text into a QR " +
+        "code, then download it as PNG or SVG, or copy the image straight " +
+        "to the clipboard. Zero dependencies: plain HTML, CSS and " +
+        "JavaScript, no build step, no framework.",
+      stack: ["Vanilla JS", "HTML / CSS", "Clipboard API"],
+    },
   ],
 
   experience: [
@@ -102,11 +117,11 @@ export default {
         "Built the company's internal backoffice almost from scratch — the " +
         "data-visualisation and statistics modules covering the platform's main " +
         "operational metrics.",
-      stack: ["TypeScript", "NestJS", "Next.js", "MongoDB", "RabbitMQ", "Docker", "Git"],
+      stack: ["TypeScript", "NestJS", "Next.js", "MongoDB", "RabbitMQ", "Go", "Kubernetes", "Docker", "Git"],
     },
     {
       id: "cepa",
-      period: ["2025"],
+      period: ["2025", "Present"],
       role: "Freelance Web Developer",
       company: "CEPA Argentina",
       companyUrl: "https://www.cepaargentina.org.ar",
@@ -142,15 +157,15 @@ export default {
   stackGroups: [
     {
       title: "Backend & architecture",
-      items: ["TypeScript", "Python", "NestJS", "Express", "Django", "Flask", "FastAPI", "REST APIs", "Workers / jobs", "Hexagonal"],
+      items: ["TypeScript", "Python", "Go", "NestJS", "Express", "Django", "Flask", "FastAPI", "REST APIs", "Workers / jobs", "Hexagonal"],
     },
     {
       title: "Data & messaging",
-      items: ["PostgreSQL", "MongoDB", "MySQL", "Redis", "RabbitMQ", "Data modelling"],
+      items: ["PostgreSQL", "MongoDB", "MySQL", "Redis", "RabbitMQ", "Prisma", "Data modelling"],
     },
     {
       title: "Platform & delivery",
-      items: ["Docker", "Docker Compose", "GitHub Actions", "Git", "Bash", "Linux"],
+      items: ["Docker", "Docker Compose", "Kubernetes", "GitHub Actions", "Git", "Bash", "Linux"],
     },
     {
       title: "Cloud & frontend",

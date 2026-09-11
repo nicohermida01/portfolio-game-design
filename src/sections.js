@@ -66,6 +66,7 @@ export const ZONES = [
       { id: "necto", position: [17, 0, -5] },
       { id: "estudio-nodo", position: [12, 0, -3] },
       { id: "bit-by-bit", position: [15.5, 0, -2] },
+      { id: "quick-qr", position: [15, 0, -4] },
     ],
   },
 ];

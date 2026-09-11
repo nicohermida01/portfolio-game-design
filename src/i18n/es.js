@@ -20,7 +20,8 @@ export default {
     headline: "Construyo productos web de punta a punta — de la API a la interfaz.",
     body:
       "Desarrollador de software de La Plata, Argentina — Sistemas en la UNLP, un " +
-      "año en producción en una startup y varios proyectos llevados de punta a " +
+      "año en producción en una startup, trabajo freelance activo entregando " +
+      "productos reales desde entonces, y varios proyectos llevados de punta a " +
       "punta. Me inclino por el backend y la arquitectura: APIs REST, mensajería " +
       "asíncrona, diseño hexagonal y llevar algo desde el modelo de dominio hasta " +
       "el deploy.",
@@ -76,6 +77,20 @@ export default {
         "explicados con claridad, sin experiencia previa.",
       stack: ["Astro", "TypeScript", "TailwindCSS"],
     },
+    {
+      id: "quick-qr",
+      name: "Quick QR",
+      badge: "Personal",
+      href: "https://qr-code-generator-kappa-ruby.vercel.app/",
+      hrefLabel: "En vivo",
+      image: "/portfolio/quick-qr.png",
+      description:
+        "Generador de códigos QR de una sola página — convierte cualquier " +
+        "enlace o texto en un código QR para descargar como PNG o SVG, o " +
+        "copiar la imagen directo al portapapeles. Sin dependencias: HTML, " +
+        "CSS y JavaScript puros, sin build step ni framework.",
+      stack: ["Vanilla JS", "HTML / CSS", "Clipboard API"],
+    },
   ],
 
   experience: [
@@ -95,11 +110,11 @@ export default {
         "Construí el backoffice interno de la empresa casi desde cero — los " +
         "módulos de visualización de datos y estadísticas que cubren las " +
         "principales métricas operativas de la plataforma.",
-      stack: ["TypeScript", "NestJS", "Next.js", "MongoDB", "RabbitMQ", "Docker", "Git"],
+      stack: ["TypeScript", "NestJS", "Next.js", "MongoDB", "RabbitMQ", "Go", "Kubernetes", "Docker", "Git"],
     },
     {
       id: "cepa",
-      period: ["2025"],
+      period: ["2025", "Actualidad"],
       role: "Desarrollador Web Freelance",
       company: "CEPA Argentina",
       companyUrl: "https://www.cepaargentina.org.ar",
@@ -136,15 +151,15 @@ export default {
   stackGroups: [
     {
       title: "Backend y arquitectura",
-      items: ["TypeScript", "Python", "NestJS", "Express", "Django", "Flask", "FastAPI", "APIs REST", "Workers / jobs", "Hexagonal"],
+      items: ["TypeScript", "Python", "Go", "NestJS", "Express", "Django", "Flask", "FastAPI", "APIs REST", "Workers / jobs", "Hexagonal"],
     },
     {
       title: "Datos y mensajería",
-      items: ["PostgreSQL", "MongoDB", "MySQL", "Redis", "RabbitMQ", "Modelado de datos"],
+      items: ["PostgreSQL", "MongoDB", "MySQL", "Redis", "RabbitMQ", "Prisma", "Modelado de datos"],
     },
     {
       title: "Plataforma y entrega",
-      items: ["Docker", "Docker Compose", "GitHub Actions", "Git", "Bash", "Linux"],
+      items: ["Docker", "Docker Compose", "Kubernetes", "GitHub Actions", "Git", "Bash", "Linux"],
     },
     {
       title: "Cloud y frontend",
