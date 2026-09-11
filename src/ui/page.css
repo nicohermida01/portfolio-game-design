@@ -71,6 +71,9 @@
 }
 
 .pp-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -78,9 +81,16 @@
 }
 .pp-brand-short {
   display: none;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
   letter-spacing: 0.16em;
   color: #e7e9f0;
+}
+.pp-brand-logo {
+  width: auto;
+  height: 26px;
+  flex: none;
 }
 
 .pp-nav {
@@ -642,7 +652,7 @@
     display: none;
   }
   .pp-brand-short {
-    display: inline;
+    display: flex;
   }
   .pp-nav {
     display: none;

@@ -23,9 +23,13 @@ export default function PagePortfolio() {
       <div className="pp-wrap" id="top">
         <header className="pp-header">
           <a href="#top" className="pp-brand pp-m">
+            <img className="pp-brand-logo" src="/apple-touch-icon.png" alt="" />
             {profile.name}
           </a>
-          <span className="pp-brand-short pp-m">NH</span>
+          <span className="pp-brand-short pp-m">
+            <img className="pp-brand-logo" src="/apple-touch-icon.png" alt="" />
+            NH
+          </span>
 
           <nav className="pp-nav pp-m" aria-label={ui.sectionsAria}>
             <a href="#work">{sections.work}</a>
