@@ -53,10 +53,12 @@ export function persistLocale(locale) {
   }
 }
 
-// Keep the document's lang attribute in step so screen readers and the browser
-// pick the right pronunciation / hyphenation.
+// Keep the document's lang attribute and tab title in step so screen readers,
+// the browser, and search engines all see the active locale.
 export function applyDocumentLocale(locale) {
   if (typeof document !== "undefined") {
     document.documentElement.lang = locale;
+    const { name, role } = getDict(locale).profile;
+    document.title = `${name} — ${role}`;
   }
 }
