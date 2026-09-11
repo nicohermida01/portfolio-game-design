@@ -27,7 +27,15 @@ export default function ThreeScene() {
 
   return (
     <KeyboardControls map={KEY_MAP}>
-      <Canvas shadows camera={{ position: [15.5, 11.5, 15.5], fov: 40 }}>
+      {/* Cap DPR and drop antialias: mobile GPUs choke on full-res render
+          targets (Bloom buffers + shadow map), which shows up as black
+          context-loss flickers while playing. Bloom already softens edges. */}
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        gl={{ antialias: false, powerPreference: "high-performance" }}
+        camera={{ position: [15.5, 11.5, 15.5], fov: 40 }}
+      >
         {/* Rapier loads its physics engine (WASM) asynchronously. */}
         <Suspense fallback={null}>
           <Experience />

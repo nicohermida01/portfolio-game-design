@@ -51,7 +51,7 @@ export default function Experience() {
         intensity={1.25}
         color="#9fb4d4"
         castShadow
-        shadow-mapSize={[4096, 4096]}
+        shadow-mapSize={[2048, 2048]}
         shadow-camera-near={1}
         shadow-camera-far={65}
         shadow-camera-left={-30}
